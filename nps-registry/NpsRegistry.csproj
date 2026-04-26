@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <LangVersion>latest</LangVersion>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <AssemblyName>nps-registry</AssemblyName>
+    <RootNamespace>NPS.Daemon.Registry</RootNamespace>
+    <Version>1.0.0-alpha.3</Version>
+    <Description>NPS Daemon — Layer 2 cross-machine NDP discovery registry (nps-registry). Centralised discovery service responding to Resolve / Graph queries, aggregating registrations from multiple machines.</Description>
+    <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="LabAcacia.NPS.Core" Version="1.0.0-alpha.3" />
+    <PackageReference Include="LabAcacia.NPS.NDP"  Version="1.0.0-alpha.3" />
+  </ItemGroup>
+
+</Project>

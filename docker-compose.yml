@@ -1,0 +1,62 @@
+version: "3.9"
+
+# Reference docker-compose for the four OSS NPS daemons.
+#
+# Spin up everything:        docker compose up -d
+# Spin up just one:          docker compose up -d npsd
+# Tail one daemon's logs:    docker compose logs -f nps-runner
+#
+# Production deployments will typically:
+#   - put nps-gateway behind nginx/Caddy/Traefik for TLS termination
+#   - run npsd on every machine that hosts NPS workers
+#   - run nps-registry once per cluster, fronted by an internal LB
+#   - run nps-runner once per machine alongside npsd
+
+services:
+
+  npsd:
+    build:
+      context: ./npsd
+      dockerfile: Dockerfile
+    image: labacacia/npsd:1.0.0-alpha.3
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:17433:17433"   # loopback only — public ingress is nps-gateway
+    volumes:
+      - npsd-data:/data
+    environment:
+      NPSD_HOST: 0.0.0.0
+      NPSD_PORT: 17433
+      NPSD_DATA_DIR: /data
+
+  nps-runner:
+    build:
+      context: ./nps-runner
+      dockerfile: Dockerfile
+    image: labacacia/nps-runner:1.0.0-alpha.3
+    restart: unless-stopped
+    depends_on:
+      - npsd
+
+  nps-gateway:
+    build:
+      context: ./nps-gateway
+      dockerfile: Dockerfile
+    image: labacacia/nps-gateway:1.0.0-alpha.3
+    restart: unless-stopped
+    ports:
+      - "${NPS_GATEWAY_PORT:-8080}:8080"
+    depends_on:
+      - npsd
+
+  nps-registry:
+    build:
+      context: ./nps-registry
+      dockerfile: Dockerfile
+    image: labacacia/nps-registry:1.0.0-alpha.3
+    restart: unless-stopped
+    ports:
+      - "${NPS_REGISTRY_PORT:-17436}:17436"
+
+volumes:
+  npsd-data:
