@@ -10,15 +10,15 @@ English | [中文版](./README.cn.md)
 > [`docs/daemons/architecture.md`](../docs/architecture.md)
 > for the broader six-daemon topology.
 
-## Status — alpha.3
+## Status — alpha.4
 
 **Phase 1 skeleton.** Public-facing HTTP listener with a `/health`
 endpoint that documents the planned milestones. Real ingress logic
 (TLS termination, rate limit, auth, NPT debit, reputation lookup,
 Anchor Node middleware wiring per [NPS-CR-0001](https://github.com/labacacia/NPS-Release/blob/main/spec/cr/NPS-CR-0001-anchor-bridge-split.md))
-lands across alpha.4 → alpha.5.
+lands at alpha.5+.
 
-This skeleton exists at alpha.3 so that the deployment surface (process
+This skeleton has been in place since alpha.3 so that the deployment surface (process
 name, NuGet package id, Docker image tag) is stable from the start of
 the daemon ecosystem.
 
@@ -42,8 +42,8 @@ curl -s http://localhost:8080/health | jq
 ### Docker
 
 ```bash
-docker build -f tools/daemons/nps-gateway/Dockerfile -t labacacia/nps-gateway:1.0.0-alpha.3 .
-docker run --rm -p 8080:8080 labacacia/nps-gateway:1.0.0-alpha.3
+docker build -f tools/daemons/nps-gateway/Dockerfile -t labacacia/nps-gateway:1.0.0-alpha.4 .
+docker run --rm -p 8080:8080 labacacia/nps-gateway:1.0.0-alpha.4
 ```
 
 ## Configuration (env vars)

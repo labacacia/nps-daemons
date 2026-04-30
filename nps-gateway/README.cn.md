@@ -8,14 +8,14 @@
 > DDoS 防护。完整六-daemon 拓扑见
 > [`docs/daemons/architecture.cn.md`](../docs/architecture.cn.md)。
 
-## 状态 —— alpha.3
+## 状态 —— alpha.4
 
 **Phase 1 骨架。** 公网 HTTP 监听 + `/health` 端点（端点本身记录后续里程碑）。
 实际 ingress 逻辑（TLS termination、限速、鉴权、NPT 扣款、声誉查询、
 [NPS-CR-0001](https://gitee.com/labacacia/NPS-Release/blob/main/spec/cr/NPS-CR-0001-anchor-bridge-split.md) Anchor Node 中间件
 接入）在 alpha.4 → alpha.5 落地。
 
-骨架在 alpha.3 出现的目的是让部署面（进程名、NuGet 包 id、Docker image
+骨架自 alpha.3 起存在，目的是让部署面（进程名、NuGet 包 id、Docker image
 tag）从 daemon 生态的起点就稳定下来。
 
 ## 命名说明
@@ -35,8 +35,8 @@ curl -s http://localhost:8080/health | jq
 ### Docker
 
 ```bash
-docker build -f tools/daemons/nps-gateway/Dockerfile -t labacacia/nps-gateway:1.0.0-alpha.3 .
-docker run --rm -p 8080:8080 labacacia/nps-gateway:1.0.0-alpha.3
+docker build -f tools/daemons/nps-gateway/Dockerfile -t labacacia/nps-gateway:1.0.0-alpha.4 .
+docker run --rm -p 8080:8080 labacacia/nps-gateway:1.0.0-alpha.4
 ```
 
 ## 配置（环境变量）

@@ -19,7 +19,7 @@ layers of the standard NPS deployment topology.
 
 ## What's in this repo
 
-| Layer | Daemon | Default port | Status at `v1.0.0-alpha.3` |
+| Layer | Daemon | Default port | Status at `v1.0.0-alpha.4` |
 |-------|--------|--------------|----------------------------|
 | 1 | [`npsd`](./npsd/) | `127.0.0.1:17433` | L1 minimum: HTTP listener, root keypair generation (POSIX `0600`), `/.nwm`, `/health`. |
 | 1 | [`nps-runner`](./nps-runner/) | — (worker) | Phase 1 skeleton — Generic Host scaffolding + 30 s heartbeat. Inbox watcher + spawn-spec resolver land alpha.5+. |
@@ -71,8 +71,8 @@ Each subdirectory ships a self-contained Dockerfile:
 
 ```bash
 cd npsd
-docker build -t labacacia/npsd:1.0.0-alpha.3 .
-docker run --rm -p 17433:17433 -v npsd-data:/data labacacia/npsd:1.0.0-alpha.3
+docker build -t labacacia/npsd:1.0.0-alpha.4 .
+docker run --rm -p 17433:17433 -v npsd-data:/data labacacia/npsd:1.0.0-alpha.4
 ```
 
 The .NET 10 SDK works for source builds too:

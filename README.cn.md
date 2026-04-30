@@ -18,7 +18,7 @@
 
 ## 仓库内容
 
-| 层 | Daemon | 默认端口 | `v1.0.0-alpha.3` 状态 |
+| 层 | Daemon | 默认端口 | `v1.0.0-alpha.4` 状态 |
 |----|--------|----------|------------------------|
 | 1 | [`npsd`](./npsd/) | `127.0.0.1:17433` | L1 最小集：HTTP 监听、root keypair 生成（POSIX `0600`）、`/.nwm`、`/health`。|
 | 1 | [`nps-runner`](./nps-runner/) | —（worker）| Phase 1 骨架 —— Generic Host 脚手架 + 30 秒心跳。Inbox 监听 + spawn-spec 解析在 alpha.5+。|
@@ -69,8 +69,8 @@ docker compose up -d npsd
 
 ```bash
 cd npsd
-docker build -t labacacia/npsd:1.0.0-alpha.3 .
-docker run --rm -p 17433:17433 -v npsd-data:/data labacacia/npsd:1.0.0-alpha.3
+docker build -t labacacia/npsd:1.0.0-alpha.4 .
+docker run --rm -p 17433:17433 -v npsd-data:/data labacacia/npsd:1.0.0-alpha.4
 ```
 
 源码构建也行（需要 .NET 10 SDK）：

@@ -9,7 +9,7 @@ English | [中文版](./README.cn.md)
 > [`docs/daemons/architecture.md`](../docs/architecture.md)
 > for the broader six-daemon topology.
 
-## Status — alpha.3
+## Status — alpha.4
 
 **Phase 1 skeleton.** The Generic Host scaffolding is in place; the
 binary builds, starts, and emits a 30-second heartbeat log. The actual
@@ -17,7 +17,7 @@ inbox watch + spawn-spec resolver + worker lifecycle management land
 at the L3 stage (alpha.5+) per the
 [daemon phasing table](../docs/architecture.md#phasing-across-alpha--beta).
 
-This skeleton exists at alpha.3 so that the deployment surface (process
+This skeleton has been in place since alpha.3 so that the deployment surface (process
 name, NuGet package id, Docker image tag, systemd unit name) is stable
 from the start of the daemon ecosystem rather than appearing late.
 
@@ -25,15 +25,15 @@ from the start of the daemon ecosystem rather than appearing late.
 
 ```bash
 dotnet run --project tools/daemons/nps-runner/NpsRunner.csproj
-# → "nps-runner v1.0.0-alpha.3 starting (Phase 1 skeleton — ...)"
+# → "nps-runner v1.0.0-alpha.4 starting (Phase 1 skeleton — ...)"
 # → "nps-runner heartbeat — Phase 1 skeleton, no work to do yet"  (every 30 s)
 ```
 
 ### Docker
 
 ```bash
-docker build -f tools/daemons/nps-runner/Dockerfile -t labacacia/nps-runner:1.0.0-alpha.3 .
-docker run --rm labacacia/nps-runner:1.0.0-alpha.3
+docker build -f tools/daemons/nps-runner/Dockerfile -t labacacia/nps-runner:1.0.0-alpha.4 .
+docker run --rm labacacia/nps-runner:1.0.0-alpha.4
 ```
 
 ## Why a separate daemon (and not part of `npsd`)

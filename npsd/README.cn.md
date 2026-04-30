@@ -17,16 +17,19 @@
 - **`GET /.nwm`** —— daemon 自身的 Neural Web Manifest，声明上面这些路由。
 - **`GET /health`** —— Docker `HEALTHCHECK` / systemd 活性探针目标。
 
-## alpha.3 还没做的部分
+## alpha.4 已落地的部分
+
+- NCP 原生模式连接前导字节（`NPS/1.0\n`）runtime —— NPS-RFC-0001 Phase 2。
+- Sub-NID 签发：`npsd` 为本机 agent 签发子 NID。
+- Per-NID inbox 队列：resident agent 通过 `npsd` 的内存 inbox 接收消息。
+
+## alpha.5+ 还没做的部分
 
 按 `docs/daemons/architecture.md` 的逐 daemon 阶段表跟踪：
 
-- NCP 原生模式 wire transport。alpha.3 仅 HTTP；
-  [NPS-RFC-0001](https://gitee.com/labacacia/NPS-Release/blob/main/spec/rfcs/NPS-RFC-0001-ncp-connection-preamble.cn.md)
-  原生模式 preamble runtime 在 alpha.4 落地。
-- Inbox 持久化（LMDB / SQLite）。alpha.3 是内存队列；持久化跟 NCP 原生
-  runtime 一起在 alpha.4 落地（两者共享同一条投递流水线）。
+- 主动推送到 resident agent（inbox → agent socket）。
 - 向本地 NDP registry 广播 AnnounceFrame。
+- Sub-NID 续签 —— 当前只能 revoke + reissue。
 - Sub-NID 续签（alpha.4）—— 现在只能 revoke + reissue。
 
 ## 快速开始
@@ -44,10 +47,10 @@ curl -s http://127.0.0.1:17433/.nwm   | jq
 ### Docker
 
 ```bash
-docker build -f tools/daemons/npsd/Dockerfile -t labacacia/npsd:1.0.0-alpha.3 .
+docker build -f tools/daemons/npsd/Dockerfile -t labacacia/npsd:1.0.0-alpha.4 .
 docker run --rm -p 17433:17433 \
   -v npsd-data:/data \
-  labacacia/npsd:1.0.0-alpha.3
+  labacacia/npsd:1.0.0-alpha.4
 ```
 
 ## API

@@ -18,14 +18,19 @@ English | [中文版](./README.cn.md)
 - **`GET /.nwm`** — daemon-self Neural Web Manifest declaring the routes above.
 - **`GET /health`** — Docker `HEALTHCHECK` / systemd liveness target.
 
-## What is NOT yet implemented at alpha.3
+## What landed in alpha.4
+
+- NCP native-mode connection preamble (`NPS/1.0\n`) runtime — NPS-RFC-0001 Phase 2.
+- Sub-NID issuance: `npsd` signs child NIDs for local agents.
+- Per-NID inbox queue: resident agents receive messages via `npsd`'s in-memory inbox.
+
+## What is NOT yet implemented (alpha.5+)
 
 Tracked in `docs/daemons/architecture.md` under the per-daemon phasing table:
 
-- NCP native-mode wire transport. HTTP-only at alpha.3; native-mode preamble runtime per [NPS-RFC-0001](https://github.com/labacacia/NPS-Release/blob/main/spec/rfcs/NPS-RFC-0001-ncp-connection-preamble.md) lands at alpha.4.
-- Inbox persistence (LMDB / SQLite). alpha.3 uses an in-memory queue; persistence lands alongside the NCP native-mode runtime in alpha.4 since both share the same delivery pipeline.
+- Push delivery to resident agents (inbox → agent socket).
 - AnnounceFrame emission to the local NDP registry.
-- Sub-NID renewal (alpha.4) — currently you revoke + reissue.
+- Sub-NID renewal — currently revoke + reissue.
 
 ## Quick start
 
@@ -42,10 +47,10 @@ curl -s http://127.0.0.1:17433/.nwm   | jq
 ### Docker
 
 ```bash
-docker build -f tools/daemons/npsd/Dockerfile -t labacacia/npsd:1.0.0-alpha.3 .
+docker build -f tools/daemons/npsd/Dockerfile -t labacacia/npsd:1.0.0-alpha.4 .
 docker run --rm -p 17433:17433 \
   -v npsd-data:/data \
-  labacacia/npsd:1.0.0-alpha.3
+  labacacia/npsd:1.0.0-alpha.4
 ```
 
 ## API
