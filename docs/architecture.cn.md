@@ -5,8 +5,9 @@
 > NPS 在生产环境的参考部署拓扑。六个常驻服务分布在三层；每一层独立水平扩展，
 > 各层有不同的信任边界和故障边界。
 >
-> 状态 —— v1.0-alpha.3：只有第一层 `npsd` 有可用参考实现；其余五个以骨架项目
-> 形式落地，让部署面 + 进程名稳定下来，实现细节随 alpha.4 → beta 逐步补全。
+> 状态 —— v1.0-alpha.4：`npsd`（L1+）、`nps-registry`（SQLite 真实注册中心）、
+> `nps-ledger`（Phase 2：Merkle + STH + 包含证明）已全部可用。`nps-runner`、
+> `nps-gateway`、`nps-cloud-ca` 仍为骨架项目，随 alpha.5 → beta 逐步补全。
 
 ---
 
@@ -108,14 +109,14 @@
 
 ## alpha + beta 阶段化
 
-| Daemon | alpha.3（本次） | alpha.4 | alpha.5+ | beta / 1.0 |
-|--------|----------------|---------|----------|------------|
-| `npsd` | L1 最小集：`127.0.0.1:17433` 监听、root keypair 生成、`/.nwm`、基础 `/health`、本机 NDP 上发 AnnounceFrame | NCP 原生模式前导 runtime（NPS-RFC-0001 Phase 2 .NET 部分）| Inbox 持久化、sub-NID 签发、推送到 resident agent | 完整 L1 + L2 合规 |
+| Daemon | alpha.3 | alpha.4（本次） | alpha.5+ | beta / 1.0 |
+|--------|---------|----------------|----------|------------|
+| `npsd` | L1 最小集：`127.0.0.1:17433` 监听、root keypair 生成、`/.nwm`、基础 `/health`、本机 NDP 上发 AnnounceFrame | L1+：sub-NID 签发、per-NID inbox 队列、NCP 原生模式前导 runtime（NPS-RFC-0001）| 推送到 resident agent | 完整 L1 + L2 合规 |
 | `nps-runner` | 骨架 + Generic-Host worker；记录 inbox-watch 契约 | Inbox poller 接入 `npsd` | Spawn 生命周期、隔离 | L3 合规 |
-| `nps-gateway` | 骨架 + `0.0.0.0:443` HTTP 监听（TLS 关）；记录 NeuronHub 集成点 | Anchor Node 中间件接入（NPS-CR-0001 wiring）| 声誉查询（NPS-RFC-0004 Phase 2）| DDoS、NPT 扣款 |
-| `nps-registry` | 骨架 + HTTP 监听；占位 `Resolve`/`Graph` 端点返回 `NDP-REGISTRY-UNAVAILABLE` | 真实 registry，SQLite 后端 | HA cluster 模式 | Federation |
-| `nps-cloud-ca` | 骨架；实际签发交给 `tools/nip-ca-server*`（6 个多语言 OSS CA）| NPS-RFC-0002 X.509 + ACME 接入 | HSM 集成 | 跨 CA 信任 |
-| `nps-ledger` | 骨架 + 内存日志，遵循 NPS-RFC-0004 Phase 1 条目结构 | 持久化 + Merkle 树（NPS-RFC-0004 Phase 2）| STH gossip、公共镜像 | 公共日志认证 |
+| `nps-gateway` | 骨架 + `0.0.0.0:443` HTTP 监听（TLS 关）；记录 NeuronHub 集成点 | Anchor Node 中间件接入（NPS-CR-0001 wiring）| 声誉查询（NPS-RFC-0004）| DDoS、NPT 扣款 |
+| `nps-registry` | 骨架 + HTTP 监听；占位 `Resolve`/`Graph` 端点返回 `NDP-REGISTRY-UNAVAILABLE` | **真实 SQLite 注册中心**：Announce / Resolve / Graph 全部可用；TTL lazy expiry；单调 graph seq；文件或内存通过 env 选择 | HA cluster 模式 | Federation |
+| `nps-cloud-ca` | 骨架；实际签发交给 `tools/nip-ca-server*`（6 个多语言 OSS CA）| NPS-RFC-0002 X.509 + ACME 接入（骨架；完整签发在 nip-ca-server）| HSM 集成 | 跨 CA 信任 |
+| `nps-ledger` | 骨架 + 内存日志，遵循 NPS-RFC-0004 Phase 1 条目结构 | **Phase 2**：SQLite 持久化、RFC 9162 Merkle 树、operator 签名 STH、`/v1/log/proof` 包含证明端点 | STH gossip、公共镜像 | 公共日志认证 |
 
 ---
 

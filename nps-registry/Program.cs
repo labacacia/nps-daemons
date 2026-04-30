@@ -4,11 +4,13 @@
 // nps-registry — NPS Daemon, Layer 2 (cross-machine NDP discovery).
 // See docs/daemons/architecture.md for the role this binary plays.
 //
-// Phase 1 (v1.0-alpha.3): listens on the NDP optional dedicated port
-// 17436; resolve/graph endpoints return NDP-REGISTRY-UNAVAILABLE so
-// callers can already wire against the URL surface, but real
-// registration storage lands in alpha.4 (SQLite-backed) and L2
-// federation lands in alpha.5+.
+// v1.0.0-alpha.4: SQLite-backed NDP registry with real Announce / Resolve / Graph.
+// L2 federation lands in alpha.5+.
+
+using System.Text.Json;
+using NPS.Daemon.Registry;
+using NPS.NDP.Frames;
+using NPS.NDP.Registry;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,42 +19,148 @@ builder.WebHost.ConfigureKestrel(options =>
     var port = int.TryParse(Environment.GetEnvironmentVariable("NPSREGISTRY_PORT"), out var p) ? p : 17436;
     var host = Environment.GetEnvironmentVariable("NPSREGISTRY_HOST") ?? "0.0.0.0";
     if (host == "0.0.0.0")
-    {
         options.ListenAnyIP(port);
-    }
     else
-    {
         options.ListenLocalhost(port);
-    }
 });
+
+// ── Registry ──────────────────────────────────────────────────────────────────
+
+var sqlitePath = Environment.GetEnvironmentVariable("NPSREGISTRY_SQLITE_PATH");
+
+SqliteNdpRegistry? sqliteRegistry = null;
+INdpRegistry registry;
+
+if (!string.IsNullOrEmpty(sqlitePath))
+{
+    sqliteRegistry = new SqliteNdpRegistry(sqlitePath);
+    registry       = sqliteRegistry;
+}
+else
+{
+    // In-memory fallback — useful for ephemeral single-instance deployments
+    sqliteRegistry = SqliteNdpRegistry.CreateInMemory();
+    registry       = sqliteRegistry;
+}
+
+builder.Services.AddSingleton(registry);
+builder.Services.AddSingleton(sqliteRegistry);
+
+// ── App ───────────────────────────────────────────────────────────────────────
 
 var app = builder.Build();
 
-app.MapGet("/health", () => Results.Json(new
+app.MapGet("/health", (INdpRegistry reg) =>
 {
-    status         = "ok",
-    daemon         = "nps-registry",
-    version        = "1.0.0-alpha.3",
-    layer          = 2,
-    role           = "cross-machine NDP discovery (skeleton)",
-    phase          = 1,
-    spec_reference = "spec/NPS-4-NDP.md",
-}));
+    var all = reg.GetAll();
+    return Results.Json(new
+    {
+        status    = "ok",
+        daemon    = "nps-registry",
+        version   = "1.0.0-alpha.4",
+        layer     = 2,
+        role      = "cross-machine NDP discovery",
+        phase     = 2,
+        entries   = all.Count,
+        storage   = string.IsNullOrEmpty(sqlitePath) ? "in-memory" : "sqlite",
+        spec_ref  = "spec/NPS-4-NDP.md",
+    });
+});
 
-// Phase-1 placeholder Resolve / Graph endpoints. They speak the URL
-// shape but return NDP-REGISTRY-UNAVAILABLE so consumers can already
-// wire against this daemon and gracefully fall back. Real registration
-// + storage land in alpha.4.
-IResult NdpUnavailable() => Results.Json(new
+// ── POST /v1/announce ────────────────────────────────────────────────────────
+
+app.MapPost("/v1/announce", async (HttpRequest req, INdpRegistry reg) =>
 {
-    error   = "NDP-REGISTRY-UNAVAILABLE",
-    status  = "NPS-SERVER-UNAVAILABLE",
-    message = "nps-registry alpha.3 ships as a skeleton; SQLite-backed registration + Resolve/Graph land in alpha.4. See docs/daemons/architecture.md.",
-}, statusCode: 503);
+    AnnounceFrame? frame;
+    try
+    {
+        frame = await req.ReadFromJsonAsync<AnnounceFrame>();
+    }
+    catch (JsonException ex)
+    {
+        return Results.Json(new
+        {
+            error   = "NDP-ANNOUNCE-INVALID",
+            status  = "NPS-CLIENT-BAD-FRAME",
+            message = $"announce body is not valid JSON: {ex.Message}",
+        }, statusCode: 400);
+    }
 
-app.MapGet("/v1/resolve", NdpUnavailable);
-app.MapGet("/v1/graph",   NdpUnavailable);
-app.MapPost("/v1/announce", NdpUnavailable);
+    if (frame is null || string.IsNullOrEmpty(frame.Nid))
+    {
+        return Results.Json(new
+        {
+            error   = "NDP-ANNOUNCE-INVALID",
+            status  = "NPS-CLIENT-BAD-FRAME",
+            message = "announce body is missing or nid is empty.",
+        }, statusCode: 400);
+    }
 
-app.Logger.LogInformation("nps-registry v1.0.0-alpha.3 starting on port 17436 (Phase 1 skeleton — SQLite registry lands at alpha.4; see docs/daemons/architecture.md)");
+    reg.Announce(frame);
+
+    return frame.Ttl == 0
+        ? Results.Json(new { ok = true, nid = frame.Nid, status = "evicted" })
+        : Results.Json(new { ok = true, nid = frame.Nid, status = "registered" });
+});
+
+// ── GET /v1/resolve ───────────────────────────────────────────────────────────
+
+app.MapGet("/v1/resolve", (string target, INdpRegistry reg) =>
+{
+    if (string.IsNullOrWhiteSpace(target))
+    {
+        return Results.Json(new
+        {
+            error   = "NDP-RESOLVE-INVALID-TARGET",
+            status  = "NPS-CLIENT-BAD-FRAME",
+            message = "query parameter 'target' is required.",
+        }, statusCode: 400);
+    }
+
+    var result = reg.Resolve(target);
+    if (result is null)
+    {
+        return Results.Json(new
+        {
+            error   = "NDP-RESOLVE-NOT-FOUND",
+            status  = "NPS-SERVER-UNAVAILABLE",
+            message = $"no live registration found for target '{target}'.",
+        }, statusCode: 404);
+    }
+
+    return Results.Json(new ResolveFrame
+    {
+        Target   = target,
+        Resolved = result,
+    });
+});
+
+// ── GET /v1/graph ─────────────────────────────────────────────────────────────
+
+app.MapGet("/v1/graph", (SqliteNdpRegistry reg) =>
+{
+    var all  = reg.GetAll();
+    var seq  = reg.GetSeq();
+    var nodes = all
+        .Select(f => new NdpGraphNode
+        {
+            Nid          = f.Nid,
+            NodeType     = f.NodeType,
+            Addresses    = f.Addresses,
+            Capabilities = f.Capabilities,
+        })
+        .ToList();
+
+    return Results.Json(new GraphFrame
+    {
+        InitialSync = true,
+        Nodes       = nodes,
+        Seq         = seq,
+    });
+});
+
+app.Logger.LogInformation(
+    "nps-registry v1.0.0-alpha.4 starting on port 17436 (SQLite registry; storage={Storage}; see docs/daemons/architecture.md)",
+    string.IsNullOrEmpty(sqlitePath) ? "in-memory" : sqlitePath);
+
 app.Run();

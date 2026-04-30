@@ -7,7 +7,14 @@ COPY Npsd.csproj   ./
 COPY nuget.config  ./
 RUN dotnet restore Npsd.csproj --configfile nuget.config
 
-COPY Program.cs    ./
+# Copy all source files (Program.cs + library code under SubNids/, Inbox/,
+# Endpoints/ etc.). Globbing all *.cs at the root + recursive subfolders
+# keeps the Dockerfile resilient to new files landing during alpha.4+.
+COPY *.cs           ./
+COPY SubNids/       ./SubNids/
+COPY Inbox/         ./Inbox/
+COPY Endpoints/     ./Endpoints/
+
 RUN dotnet publish Npsd.csproj -c Release -o /app/publish --no-restore
 
 # ── Runtime stage ─────────────────────────────────────────────────────────────

@@ -6,10 +6,10 @@ English | [中文版](./architecture.cn.md)
 > spread across three layers; each layer is independently scalable and has
 > distinct trust / failure boundaries.
 >
-> Status — v1.0-alpha.3: layer 1 (`npsd`) is the only daemon with a
-> functional reference implementation; the remaining five ship as
-> skeleton projects so the deployment surface and process names are
-> stable while implementation fills in across alpha.4 → beta.
+> Status — v1.0-alpha.4: `npsd` (L1+), `nps-registry` (SQLite-backed
+> real registry), and `nps-ledger` (Phase 2: Merkle + STH + inclusion
+> proofs) are fully functional. `nps-runner`, `nps-gateway`, and
+> `nps-cloud-ca` remain skeleton projects filling in across alpha.5 → beta.
 
 ---
 
@@ -111,14 +111,14 @@ English | [中文版](./architecture.cn.md)
 
 ## Phasing across alpha + beta
 
-| Daemon | alpha.3 (this release) | alpha.4 | alpha.5+ | beta / 1.0 |
-|--------|------------------------|---------|----------|------------|
-| `npsd` | L1 minimum: HTTP listener on `127.0.0.1:17433`, root keypair generation, `/.nwm`, baseline `/health`, AnnounceFrame on local NDP | NCP native-mode preamble runtime (NPS-RFC-0001 Phase 2 in .NET) | Inbox persistence, sub-NID issuance, push to resident agents | Conformance with full L1 + L2 |
+| Daemon | alpha.3 | alpha.4 (this release) | alpha.5+ | beta / 1.0 |
+|--------|---------|------------------------|----------|------------|
+| `npsd` | L1 minimum: HTTP listener on `127.0.0.1:17433`, root keypair generation, `/.nwm`, baseline `/health`, AnnounceFrame on local NDP | L1+: sub-NID issuance, per-NID inbox queue, NCP native-mode preamble runtime (NPS-RFC-0001) | Push to resident agents | Conformance with full L1 + L2 |
 | `nps-runner` | Skeleton + Generic-Host worker; documents the inbox-watch contract | Inbox poller wired through `npsd` | Spawn lifecycle, isolation | L3 conformance |
-| `nps-gateway` | Skeleton + HTTP listener on `0.0.0.0:443` (TLS off); documents NeuronHub integration points | Anchor Node middleware (NPS-CR-0001 wiring) | Reputation lookup (NPS-RFC-0004 Phase 2) | DDoS, NPT debit |
-| `nps-registry` | Skeleton + HTTP listener; placeholder `Resolve`/`Graph` endpoints returning `NDP-REGISTRY-UNAVAILABLE` | Real registry backed by SQLite | HA cluster mode | Federation |
-| `nps-cloud-ca` | Skeleton; defers to `tools/nip-ca-server*` (six per-language OSS CAs) for actual issuance | NPS-RFC-0002 X.509 + ACME wiring | HSM integration | Cross-CA trust |
-| `nps-ledger` | Skeleton + in-memory log honouring the NPS-RFC-0004 Phase 1 entry shape | Persistent + Merkle tree (NPS-RFC-0004 Phase 2) | STH gossip, public mirror | Public log accreditation |
+| `nps-gateway` | Skeleton + HTTP listener on `0.0.0.0:443` (TLS off); documents NeuronHub integration points | Anchor Node middleware (NPS-CR-0001 wiring) | Reputation lookup (NPS-RFC-0004) | DDoS, NPT debit |
+| `nps-registry` | Skeleton + HTTP listener; placeholder `Resolve`/`Graph` endpoints returning `NDP-REGISTRY-UNAVAILABLE` | **Real SQLite-backed registry**: Announce / Resolve / Graph all live; TTL lazy expiry; monotonic graph seq; file or in-memory via env | HA cluster mode | Federation |
+| `nps-cloud-ca` | Skeleton; defers to `tools/nip-ca-server*` (six per-language OSS CAs) for actual issuance | NPS-RFC-0002 X.509 + ACME wiring (skeleton; full issuance in nip-ca-server) | HSM integration | Cross-CA trust |
+| `nps-ledger` | Skeleton + in-memory log honouring the NPS-RFC-0004 Phase 1 entry shape | **Phase 2**: SQLite persistence, RFC 9162 Merkle tree, operator-signed STH, `/v1/log/proof` inclusion proof endpoint | STH gossip, public mirror | Public log accreditation |
 
 ---
 

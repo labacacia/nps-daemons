@@ -4,26 +4,28 @@ English | [中文版](./README.cn.md)
 
 > Reference implementation of the host-local NPS daemon. Listens on the
 > unified suite port `17433`, holds the host's root Ed25519 keypair,
-> and is the local entry point for every NPS client on the machine
-> (MCP shim, resident agent, worker, gateway). See
+> issues sub-NIDs for local agents on demand, and exposes a per-NID
+> inbox queue for resident agent push delivery. See
 > [`docs/daemons/architecture.md`](../docs/architecture.md)
 > for the broader six-daemon topology.
 
-## What this binary does (alpha.3 scope)
+## What this binary does
 
-- Binds `127.0.0.1:17433` by default (loopback only — public ingress is `nps-gateway`'s job).
-- Generates a root Ed25519 keypair on first start, persists it to `~/.local/share/npsd/root.ed25519.pkcs8` with mode `0600` (satisfies the NPS-Node Profile L1 conformance test `TC-N1-NIP-01 — Root keypair generation and permission`).
-- Serves `GET /health` for Docker `HEALTHCHECK` / systemd liveness.
-- Serves `GET /.nwm` returning the daemon's own minimal Neural Web Manifest (memory-node shape, anonymous-auth, no actions). Application-level `/.nwm` is served by whatever the operator wires through the application's own NWP stack — not by `npsd`.
+- **Bind** `127.0.0.1:17433` by default (loopback only — public ingress is `nps-gateway`'s job). Override with `NPSD_HOST` / `NPSD_PORT`.
+- **Root keypair**: generates an Ed25519 root keypair on first start; persists to `${NPSD_DATA_DIR:-~/.local/share/npsd}/root.ed25519.pkcs8` with POSIX mode `0600` (NPS-Node Profile L1 conformance test `TC-N1-NIP-01`).
+- **Sub-NID issuance**: mint and persist sub-NIDs derived from the host root NID. Carrier IdentFrames are signed with the root key. SQLite-backed at `${NPSD_DATA_DIR}/sub-nids.sqlite`.
+- **Per-NID inbox**: short-term in-memory queue per sub-NID with long-poll, ack, depth, priority, TTL, and per-NID depth caps.
+- **`GET /.nwm`** — daemon-self Neural Web Manifest declaring the routes above.
+- **`GET /health`** — Docker `HEALTHCHECK` / systemd liveness target.
 
 ## What is NOT yet implemented at alpha.3
 
-These are tracked in `docs/daemons/architecture.md` under the per-daemon phasing table:
+Tracked in `docs/daemons/architecture.md` under the per-daemon phasing table:
 
-- NCP native-mode wire transport (HTTP-only here; native-mode preamble runtime per [NPS-RFC-0001](https://github.com/labacacia/NPS-Release/blob/main/spec/rfcs/NPS-RFC-0001-ncp-connection-preamble.md) lands at alpha.4).
-- Per-NID inbox queue persistence + push to `resident` agents.
-- Sub-NID issuance for local agents.
+- NCP native-mode wire transport. HTTP-only at alpha.3; native-mode preamble runtime per [NPS-RFC-0001](https://github.com/labacacia/NPS-Release/blob/main/spec/rfcs/NPS-RFC-0001-ncp-connection-preamble.md) lands at alpha.4.
+- Inbox persistence (LMDB / SQLite). alpha.3 uses an in-memory queue; persistence lands alongside the NCP native-mode runtime in alpha.4 since both share the same delivery pipeline.
 - AnnounceFrame emission to the local NDP registry.
+- Sub-NID renewal (alpha.4) — currently you revoke + reissue.
 
 ## Quick start
 
@@ -31,8 +33,7 @@ These are tracked in `docs/daemons/architecture.md` under the per-daemon phasing
 
 ```bash
 dotnet run --project tools/daemons/npsd/Npsd.csproj
-# → Now listening on: http://127.0.0.1:17433
-# → Logs: "npsd starting; root NID host fingerprint = <8-hex>"
+# → npsd starting; root NID host fingerprint = <16-hex>; bind = 127.0.0.1:17433
 
 curl -s http://127.0.0.1:17433/health | jq
 curl -s http://127.0.0.1:17433/.nwm   | jq
@@ -47,13 +48,47 @@ docker run --rm -p 17433:17433 \
   labacacia/npsd:1.0.0-alpha.3
 ```
 
+## API
+
+All endpoints return JSON unless noted. Errors carry `{error, status, message}` per the NPS error-code namespace.
+
+### Sub-NIDs
+
+| Method | Path | Purpose |
+|--------|------|---------|
+| `POST` | `/v1/agents` | Issue a new sub-NID. Body: `{identifier?, capabilities[], scope?, agent_pub_key?, metadata?}`. Returns `{frame: IdentFrame, minted_private_key?}`. If `agent_pub_key` is omitted, npsd mints an Ed25519 keypair and returns the private half **once** as `ed25519-raw:{base64url}`. |
+| `GET`  | `/v1/agents` | List issued sub-NIDs (newest first). Query: `?limit=N&offset=M`. |
+| `GET`  | `/v1/agents/{nid}` | Return the persisted record for a NID. |
+| `POST` | `/v1/agents/{nid}/revoke` | Mark the NID revoked. Body: `{reason?}` (e.g. `"key_compromise"`). |
+
+### Inbox
+
+| Method | Path | Purpose |
+|--------|------|---------|
+| `POST` | `/v1/inbox/{nid}` | Deposit a message addressed to `{nid}`. Body is the raw payload. Headers: `Content-Type` (stored verbatim), `X-Nps-Inbox-Priority` (int, default 0; higher drains first), `X-Nps-Inbox-Ttl-Seconds` (int, default 600). Returns `{message_id, enqueued_at, expires_at}`. `404` if recipient not on this host; `403` if revoked; `429` if inbox full; `413` if payload exceeds the per-message cap. |
+| `GET`  | `/v1/inbox/{nid}` | Long-poll for messages. Query: `?wait=N` (seconds, clamped to `NPSD_MAX_INBOX_WAIT_SECONDS`), `?batch=B` (max messages returned, default 16). Returns `{nid, count, messages: [{message_id, enqueued_at, expires_at, priority, content_type, payload_b64}]}`. Empty array on timeout. |
+| `DELETE` | `/v1/inbox/{nid}/{message_id}` | Ack a message, removing it from the queue. Idempotent — second call returns `404`. |
+| `GET` | `/v1/inbox/{nid}/depth` | Current pending count for the NID. |
+
+### Daemon
+
+| Method | Path | Purpose |
+|--------|------|---------|
+| `GET` | `/health` | Returns `{status, daemon, version, layer, role, port, host_nid, host_nid_fpr, ...}`. |
+| `GET` | `/.nwm` | Daemon-self Neural Web Manifest (memory-node shape, anonymous-auth, route catalog). |
+
 ## Configuration (env vars)
 
 | Variable | Default | Purpose |
 |----------|---------|---------|
 | `NPSD_PORT` | `17433` | TCP port to bind. |
 | `NPSD_HOST` | `127.0.0.1` | Bind address. Use `0.0.0.0` only inside an isolated network namespace — never expose `npsd` directly to the public internet (use `nps-gateway`). |
-| `NPSD_DATA_DIR` | `~/.local/share/npsd` | Persistent state (root keypair, future inbox storage). |
+| `NPSD_DATA_DIR` | `~/.local/share/npsd` | Persistent state (root keypair file + sub-NID SQLite). |
+| `NPSD_HOST_NID_PREFIX` | `urn:nps:host:{HostFingerprint}` | NID prefix used when minting sub-NIDs. Override only if the host has been registered with an upstream CA under a different NID. |
+| `NPSD_SUB_NID_VALIDITY_DAYS` | `7` | Default validity window for issued sub-NIDs. |
+| `NPSD_MAX_INBOX_DEPTH_PER_NID` | `1024` | Max pending messages per NID before deposits get `429`. |
+| `NPSD_MAX_INBOX_MESSAGE_BYTES` | `65536` | Per-message payload cap (matches NCP default frame size). |
+| `NPSD_MAX_INBOX_WAIT_SECONDS` | `30` | Maximum long-poll wait time. Larger values get clamped. |
 
 ## Spec references
 
