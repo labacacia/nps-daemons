@@ -6,6 +6,17 @@
 
 ---
 
+## [1.0.0-alpha.4] —— 2026-04-30
+
+### 跟随套件的协议变更
+
+- `LabAcacia.NPS.*` NuGet 依赖升至 `v1.0.0-alpha.4`。自 alpha.3 无功能
+  变更 —— `nps-runner` 仍是 Generic Host + 30 秒心跳的骨架。
+- Inbox 监听、`spawn_spec_ref` 解析、worker 子进程生命周期仍推迟到
+  L3 阶段（alpha.5+）。
+
+---
+
 ## [1.0.0-alpha.3] —— 2026-04-26
 
 ### 新增
@@ -25,4 +36,5 @@
 
 ---
 
+[1.0.0-alpha.4]: https://gitee.com/labacacia/nps-daemons/releases/tag/v1.0.0-alpha.4
 [1.0.0-alpha.3]: https://gitee.com/labacacia/nps-daemons/releases/tag/v1.0.0-alpha.3

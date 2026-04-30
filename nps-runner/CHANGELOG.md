@@ -6,6 +6,18 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ---
 
+## [1.0.0-alpha.4] — 2026-04-30
+
+### Tracking the suite
+
+- Bumps `LabAcacia.NPS.*` NuGet dependencies to `v1.0.0-alpha.4`.
+  No functional changes since alpha.3 — `nps-runner` remains the
+  Generic Host + 30-second heartbeat skeleton.
+- Inbox watcher, `spawn_spec_ref` resolver, and worker subprocess
+  lifecycle remain deferred to the L3 stage (alpha.5+).
+
+---
+
 ## [1.0.0-alpha.3] — 2026-04-26
 
 ### Added
@@ -27,4 +39,5 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ---
 
+[1.0.0-alpha.4]: https://github.com/labacacia/nps-daemons/releases/tag/v1.0.0-alpha.4
 [1.0.0-alpha.3]: https://github.com/labacacia/nps-daemons/releases/tag/v1.0.0-alpha.3

@@ -6,6 +6,37 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ---
 
+## [1.0.0-alpha.4] — 2026-04-30
+
+### Added
+
+- **SQLite-backed real NDP registry** — `SqliteNdpRegistry` replaces
+  the alpha.3 stub. Implements the full NDP `Resolve` / `Graph` /
+  `Announce` URL surface against a real persistence store at
+  `${NPSREG_DATA_DIR:-/data}/registry.sqlite`:
+  - `POST /v1/announce` — accept `AnnounceFrame` and persist binding
+    `(NID → endpoint, TTL, signature)`.
+  - `GET /v1/resolve?nid=<nid>` — resolve NID to endpoint with TTL
+    eviction (lazy purge on read).
+  - `GET /v1/graph?nid=<nid>&depth=<N>` — depth-limited BFS traversal
+    (default cap 5 per NDP spec) with cycle detection.
+- 10 integration tests under `NPS.Tests/Daemons/NpsRegistry/` covering
+  registration, resolution, graph traversal, TTL eviction, concurrent
+  writes, and oversized announce rejection.
+
+### Tracking the suite
+
+- Bumps `LabAcacia.NPS.*` NuGet dependencies to `v1.0.0-alpha.4`.
+
+### Deferred to alpha.5+
+
+- Cross-machine federation / gossip for L2 HA-cluster mode.
+- Optional Postgres backend for cluster-grade deployments.
+- Graph-traversal optimisation beyond BFS + cycle detection (e.g.
+  query result caching, parallel traversal).
+
+---
+
 ## [1.0.0-alpha.3] — 2026-04-26
 
 ### Added
@@ -26,4 +57,5 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ---
 
+[1.0.0-alpha.4]: https://github.com/labacacia/nps-daemons/releases/tag/v1.0.0-alpha.4
 [1.0.0-alpha.3]: https://github.com/labacacia/nps-daemons/releases/tag/v1.0.0-alpha.3

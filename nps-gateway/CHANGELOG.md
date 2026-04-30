@@ -6,6 +6,21 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ---
 
+## [1.0.0-alpha.4] — 2026-04-30
+
+### Tracking the suite
+
+- Bumps `LabAcacia.NPS.*` NuGet dependencies to `v1.0.0-alpha.4`,
+  including the new `LabAcacia.NPS.NWP.Anchor` package which now ships
+  **NPS-CR-0002** topology query types (`topology.snapshot` /
+  `topology.stream`). The gateway daemon does **not** wire these yet —
+  Anchor middleware integration remains the alpha.4 → alpha.5 work.
+- No functional changes in the gateway itself since alpha.3 — still the
+  `:8080` HTTP listener + `/health` skeleton documenting the planned
+  TLS / rate-limit / auth / NPT-debit / reputation-lookup path.
+
+---
+
 ## [1.0.0-alpha.3] — 2026-04-26
 
 ### Added
@@ -27,4 +42,5 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ---
 
+[1.0.0-alpha.4]: https://github.com/labacacia/nps-daemons/releases/tag/v1.0.0-alpha.4
 [1.0.0-alpha.3]: https://github.com/labacacia/nps-daemons/releases/tag/v1.0.0-alpha.3

@@ -6,6 +6,19 @@
 
 ---
 
+## [1.0.0-alpha.4] —— 2026-04-30
+
+### 跟随套件的协议变更
+
+- `LabAcacia.NPS.*` NuGet 依赖升至 `v1.0.0-alpha.4`，其中新版
+  `LabAcacia.NPS.NWP.Anchor` 包带来 **NPS-CR-0002** topology 查询类型
+  （`topology.snapshot` / `topology.stream`）。本 daemon **暂未接线** ——
+  Anchor 中间件集成仍是 alpha.4 → alpha.5 的工作。
+- 自 alpha.3 无功能变更 —— 仍是 `:8080` HTTP 监听 + `/health` 骨架，
+  TLS / rate-limit / 鉴权 / NPT 计费 / reputation 查询仍处于规划阶段。
+
+---
+
 ## [1.0.0-alpha.3] —— 2026-04-26
 
 ### 新增
@@ -27,4 +40,5 @@
 
 ---
 
+[1.0.0-alpha.4]: https://gitee.com/labacacia/nps-daemons/releases/tag/v1.0.0-alpha.4
 [1.0.0-alpha.3]: https://gitee.com/labacacia/nps-daemons/releases/tag/v1.0.0-alpha.3

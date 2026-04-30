@@ -8,6 +8,50 @@
 
 ---
 
+## [1.0.0-alpha.4] —— 2026-04-30
+
+### 新增
+
+- **`npsd`** —— L1+ 层落地 sub-NID 签发 + per-NID inbox 队列。
+  `POST/GET /v1/agents`、`GET/POST /v1/agents/{nid}`、
+  `POST /v1/agents/{nid}/revoke` 由主机 root key 签出 IdentFrame，
+  SQLite 存于 `${NPSD_DATA_DIR}/sub-nids.sqlite`。
+  `POST /v1/inbox/{nid}`、`GET /v1/inbox/{nid}?wait=N&batch=B`
+  （long-poll）、`DELETE /v1/inbox/{nid}/{message_id}`（ack）、
+  `GET /v1/inbox/{nid}/depth` 提供内存队列，支持优先级、TTL、
+  per-NID 深度上限、payload 大小上限。17 个集成测试在
+  `NPS.Tests/Daemons/Npsd/`。
+- **`nps-registry`** —— `SqliteNdpRegistry` 替换 alpha.3 stub。
+  `Resolve` / `Graph` / `Announce` 全部走真实 SQLite 存储，TTL 懒过期。
+  10 个集成测试覆盖注册、解析、图谱遍历、TTL 淘汰、并发写。
+
+### 变更
+
+- 4 个 daemon 的 `*.csproj` 全部升到 `1.0.0-alpha.4`，引用对应
+  [`LabAcacia.NPS.*`](https://www.nuget.org/profiles/LabAcacia/) NuGet
+  包的同版本号。
+- 顶层 `docker-compose.yml` 的 `image:` tag 钉到
+  `labacacia/<daemon>:1.0.0-alpha.4`。
+
+### 跟随套件的协议变更
+
+本次随套件 `v1.0.0-alpha.4` 同步：
+
+- **NPS-RFC-0001 Phase 2** —— NCP 连接前导运行时帮助函数
+  （preamble parser + writer；`npsd` 在线缆上仍是纯 HTTP，原生 preamble
+  路由后续版本落地）。
+- **NPS-RFC-0002 Phase A/B** —— `LabAcacia.NPS.NIP` 中的 X.509 NID
+  证书 + ACME `agent-01`（`nps-cloud-ca` 和 `nip-ca-server` 后续会消费）。
+- **NPS-CR-0002** —— Anchor Node 的 `topology.snapshot` /
+  `topology.stream`（`nps-gateway` 等 Anchor 中间件落地后接入）。
+
+仍为 Phase 1 骨架（自 alpha.3 无功能变更）：`nps-runner`、`nps-gateway`。
+
+完整套件级汇总见
+[`NPS-Release/CHANGELOG.cn.md`](https://gitee.com/labacacia/NPS-Release/blob/main/CHANGELOG.cn.md)。
+
+---
+
 ## [1.0.0-alpha.3] —— 2026-04-26
 
 ### 新增
@@ -64,4 +108,5 @@
 
 ---
 
+[1.0.0-alpha.4]: https://gitee.com/labacacia/nps-daemons/releases/tag/v1.0.0-alpha.4
 [1.0.0-alpha.3]: https://gitee.com/labacacia/nps-daemons/releases/tag/v1.0.0-alpha.3

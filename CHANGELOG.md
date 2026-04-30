@@ -8,6 +8,56 @@ Until NPS reaches v1.0 stable, every repository in the suite is synchronized to 
 
 ---
 
+## [1.0.0-alpha.4] — 2026-04-30
+
+### Added
+
+- **`npsd`** — Sub-NID issuance + per-NID inbox queue land at the L1+
+  layer. `POST/GET /v1/agents`, `GET/POST /v1/agents/{nid}`,
+  `POST /v1/agents/{nid}/revoke` mint IdentFrames signed by the host
+  root key (SQLite-backed at `${NPSD_DATA_DIR}/sub-nids.sqlite`).
+  `POST /v1/inbox/{nid}`, `GET /v1/inbox/{nid}?wait=N&batch=B`
+  (long-poll), `DELETE /v1/inbox/{nid}/{message_id}` (ack),
+  `GET /v1/inbox/{nid}/depth` deliver an in-memory queue with
+  priority, TTL, per-NID depth caps, and payload size caps. 17
+  integration tests under `NPS.Tests/Daemons/Npsd/`.
+- **`nps-registry`** — `SqliteNdpRegistry` replaces the alpha.3 stub.
+  Real `Resolve` / `Graph` / `Announce` backed by a SQLite store with
+  TTL-based lazy purge. 10 integration tests covering registration,
+  resolution, graph traversal, TTL eviction, and concurrent writes.
+
+### Changed
+
+- All four daemons' `*.csproj` files bumped to `1.0.0-alpha.4` and
+  reference the matching
+  [`LabAcacia.NPS.*`](https://www.nuget.org/profiles/LabAcacia/) NuGet
+  package versions.
+- Top-level `docker-compose.yml` `image:` tags pinned to
+  `labacacia/<daemon>:1.0.0-alpha.4`.
+
+### Tracking the suite
+
+This release rolls up suite-wide protocol changes that landed in NPS
+`v1.0.0-alpha.4`:
+
+- **NPS-RFC-0001 Phase 2** — NCP connection preamble runtime helpers
+  (preamble parser + writer; `npsd` keeps HTTP-only on the wire — full
+  native preamble routing lands later).
+- **NPS-RFC-0002 Phase A/B** — X.509 NID certificates + ACME `agent-01`
+  in `LabAcacia.NPS.NIP` (`nps-cloud-ca` and `nip-ca-server` will pick
+  this up downstream).
+- **NPS-CR-0002** — Anchor Node `topology.snapshot` /
+  `topology.stream` (`nps-gateway` will wire this once the Anchor
+  middleware lands).
+
+Still phase-1 skeletons in this release: `nps-runner`, `nps-gateway`
+(no functional change since alpha.3).
+
+See [`NPS-Release/CHANGELOG.md`](https://github.com/labacacia/NPS-Release/blob/main/CHANGELOG.md)
+for the full suite-level rollup.
+
+---
+
 ## [1.0.0-alpha.3] — 2026-04-26
 
 ### Added
@@ -74,4 +124,5 @@ for the full suite-level rollup.
 
 ---
 
+[1.0.0-alpha.4]: https://github.com/labacacia/nps-daemons/releases/tag/v1.0.0-alpha.4
 [1.0.0-alpha.3]: https://github.com/labacacia/nps-daemons/releases/tag/v1.0.0-alpha.3
