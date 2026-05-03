@@ -6,6 +6,27 @@
 
 ---
 
+## [1.0.0-alpha.5.2] —— 2026-05-03
+
+### 跟随套件
+
+跟随 NPS 套件 `v1.0.0-alpha.5.2`。无 daemon 侧代码变更 ——
+`estimated_npt → cgn_est` wire 字段重命名（NPS-Dev#17）位于协议层；
+按套件统一版本策略，所有下游组件须同步升级。
+
+---
+
+## [1.0.0-alpha.5] —— 2026-05-01
+
+### 变更
+
+- `LabAcacia.NPS.NWP.Anchor` 依赖升至 `1.0.0-alpha.5.2`。该热修复版本
+  将拓扑事件的 wire 字段 `estimated_npt` 重命名为 `cgn_est`，以符合
+  Cognon Budget 规范（NPS-5 §4.3 / NPS-AaaS §2.3）。
+- gateway 自身代码无变更；API 接口与路由行为与 alpha.4 完全一致。
+
+---
+
 ## [1.0.0-alpha.4] —— 2026-04-30
 
 ### 跟随套件的协议变更
@@ -40,5 +61,7 @@
 
 ---
 
+[1.0.0-alpha.5.2]: https://gitee.com/labacacia/nps-daemons/releases/tag/v1.0.0-alpha.5.2
+[1.0.0-alpha.5]: https://gitee.com/labacacia/nps-daemons/releases/tag/v1.0.0-alpha.5
 [1.0.0-alpha.4]: https://gitee.com/labacacia/nps-daemons/releases/tag/v1.0.0-alpha.4
 [1.0.0-alpha.3]: https://gitee.com/labacacia/nps-daemons/releases/tag/v1.0.0-alpha.3

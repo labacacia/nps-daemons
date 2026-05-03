@@ -6,6 +6,29 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ---
 
+## [1.0.0-alpha.5.2] — 2026-05-03
+
+### Tracking the suite
+
+Tracks NPS suite `v1.0.0-alpha.5.2`. No daemon-specific code changes — the
+`estimated_npt → cgn_est` wire field rename (NPS-Dev#17) lands in the protocol
+layer; all downstream components must upgrade together per suite-wide versioning
+policy.
+
+---
+
+## [1.0.0-alpha.5] — 2026-05-01
+
+### Tracking the suite
+
+- Tracks NPS suite `v1.0.0-alpha.5`.  No registry-specific changes —
+  the skeleton HTTP listener and `/health` surface are identical to
+  alpha.4.  `LabAcacia.NPS.NDP` NuGet dependency bumped to
+  `v1.0.0-alpha.5`, picking up DNS TXT fallback resolution
+  (`ResolveViaDns`) and NWP error-code constants.
+
+---
+
 ## [1.0.0-alpha.4] — 2026-04-30
 
 ### Added
@@ -57,5 +80,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ---
 
+[1.0.0-alpha.5.2]: https://github.com/labacacia/nps-daemons/releases/tag/v1.0.0-alpha.5.2
+[1.0.0-alpha.5]: https://github.com/labacacia/nps-daemons/releases/tag/v1.0.0-alpha.5
 [1.0.0-alpha.4]: https://github.com/labacacia/nps-daemons/releases/tag/v1.0.0-alpha.4
 [1.0.0-alpha.3]: https://github.com/labacacia/nps-daemons/releases/tag/v1.0.0-alpha.3

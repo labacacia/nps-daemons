@@ -8,7 +8,7 @@
     <OutputType>Exe</OutputType>
     <AssemblyName>nps-runner</AssemblyName>
     <RootNamespace>NPS.Daemon.Runner</RootNamespace>
-    <Version>1.0.0-alpha.5</Version>
+    <Version>1.0.0-alpha.5.2</Version>
     <Description>NPS Daemon — Layer 1 task scheduler / FaaS runtime (nps-runner). Watches the npsd inbox for messages to ephemeral-mode NIDs and spawns the corresponding worker subprocesses per the NID's spawn-spec. L3 stage.</Description>
     <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
   </PropertyGroup>

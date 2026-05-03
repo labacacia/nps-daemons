@@ -8,6 +8,50 @@
 
 ---
 
+## [Unreleased]
+
+### 新增
+
+- **原生 OS 安装包**：`.deb`（Ubuntu/Debian amd64）、`.rpm`（Fedora/RHEL x86_64）和
+  `.msi`（Windows x64）安装包现已作为 GitHub Release Assets 与 Docker 镜像一同发布。
+  每个安装包均包含自包含二进制，无需 .NET 运行时依赖。Linux 安装包注册 systemd service 单元文件；
+  Windows MSI 通过 `NT SERVICE\<daemon>` 虚拟账户注册 Windows 服务。安装说明：
+  参见 [NPS Wiki — Operator Quickstart Bundle](https://github.com/labacacia/NPS-Release/wiki/Operator-Quickstart-Bundle#option-b-native-packages-systemd--windows-service)。
+
+---
+
+## [1.0.0-alpha.5.2] —— 2026-05-03
+
+### 跟随套件
+
+跟随 NPS 套件 `v1.0.0-alpha.5.2`。四个 daemon 全部重建并发布。
+无 daemon 层代码变更 —— 本次仅携带 `estimated_npt → cgn_est` wire 字段
+重命名（NPS-Dev#17）。请将套件所有组件同步升级。
+
+---
+
+## [1.0.0-alpha.5] —— 2026-05-01
+
+### 变更
+
+- **`npsd`** —— `AnchorNodeMiddleware` 增加 `topology:read` 能力门控
+  和每事件 `cgn_est` 字段；未知保留 NWP 帧类型返回 HTTP 501 +
+  `NWP-RESERVED-TYPE-UNSUPPORTED`。详见
+  [`npsd/CHANGELOG.cn.md`](./npsd/CHANGELOG.cn.md)。
+- **`nps-gateway`** —— `LabAcacia.NPS.NWP.Anchor` 升至
+  `1.0.0-alpha.5.2`（wire 字段 `estimated_npt` → `cgn_est` 重命名）。
+- **`nps-runner`** —— inbox watcher + worker spawn 完整实现（L3 FaaS
+  runtime），替换 alpha.3/alpha.4 心跳骨架。详见
+  [`nps-runner/CHANGELOG.cn.md`](./nps-runner/CHANGELOG.cn.md)。
+- **`nps-registry`** / **`nps-cloud-ca`** —— 跟随套件版本，无功能变更。
+- **`docker-compose.yml`** —— 所有镜像 tag 从 `1.0.0-alpha.4` 升至
+  `1.0.0-alpha.5`。
+
+完整套件级变更见
+[NPS-Release CHANGELOG](https://gitee.com/labacacia/NPS-Release/blob/main/CHANGELOG.cn.md)。
+
+---
+
 ## [1.0.0-alpha.4] —— 2026-04-30
 
 ### 新增
@@ -108,5 +152,7 @@
 
 ---
 
+[1.0.0-alpha.5.2]: https://gitee.com/labacacia/nps-daemons/releases/tag/v1.0.0-alpha.5.2
+[1.0.0-alpha.5]: https://gitee.com/labacacia/nps-daemons/releases/tag/v1.0.0-alpha.5
 [1.0.0-alpha.4]: https://gitee.com/labacacia/nps-daemons/releases/tag/v1.0.0-alpha.4
 [1.0.0-alpha.3]: https://gitee.com/labacacia/nps-daemons/releases/tag/v1.0.0-alpha.3

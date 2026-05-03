@@ -6,6 +6,27 @@
 
 ---
 
+## [1.0.0-alpha.5.2] —— 2026-05-03
+
+### 跟随套件
+
+跟随 NPS 套件 `v1.0.0-alpha.5.2`。无 daemon 侧代码变更 ——
+`estimated_npt → cgn_est` wire 字段重命名（NPS-Dev#17）位于协议层；
+按套件统一版本策略，所有下游组件须同步升级。
+
+---
+
+## [1.0.0-alpha.5] —— 2026-05-01
+
+### 跟随套件
+
+- 跟随 NPS 套件 `v1.0.0-alpha.5`。registry 无自身变更 ——
+  骨架 HTTP 监听器与 `/health` 接口与 alpha.4 完全一致。
+  `LabAcacia.NPS.NDP` NuGet 依赖升至 `v1.0.0-alpha.5`，带来
+  DNS TXT 回退解析（`ResolveViaDns`）和 NWP 错误码常量。
+
+---
+
 ## [1.0.0-alpha.4] —— 2026-04-30
 
 ### 新增
@@ -53,5 +74,7 @@
 
 ---
 
+[1.0.0-alpha.5.2]: https://gitee.com/labacacia/nps-daemons/releases/tag/v1.0.0-alpha.5.2
+[1.0.0-alpha.5]: https://gitee.com/labacacia/nps-daemons/releases/tag/v1.0.0-alpha.5
 [1.0.0-alpha.4]: https://gitee.com/labacacia/nps-daemons/releases/tag/v1.0.0-alpha.4
 [1.0.0-alpha.3]: https://gitee.com/labacacia/nps-daemons/releases/tag/v1.0.0-alpha.3

@@ -69,8 +69,8 @@ docker compose up -d npsd
 
 ```bash
 cd npsd
-docker build -t labacacia/npsd:1.0.0-alpha.4 .
-docker run --rm -p 17433:17433 -v npsd-data:/data labacacia/npsd:1.0.0-alpha.4
+docker build -t labacacia/npsd:1.0.0-alpha.5.2 .
+docker run --rm -p 17433:17433 -v npsd-data:/data labacacia/npsd:1.0.0-alpha.5.2
 ```
 
 源码构建也行（需要 .NET 10 SDK）：
@@ -83,6 +83,78 @@ dotnet run
 
 所有 daemon 依赖 nuget.org 上发布的 `LabAcacia.NPS.*` NuGet 包
 （`Core`、`NIP`、`NDP`、`NWP`、`NWP.Anchor`、`NOP`），不依赖 monorepo。
+
+## 原生安装包（不需要 Docker）
+
+[GitHub Release](https://github.com/labacacia/nps-daemons/releases) 随 Docker 镜像一同发布自包含原生安装包 ——
+无需 .NET 运行时，开箱即用。Linux 安装包注册 systemd 服务；Windows MSI 通过
+`NT SERVICE\<daemon>` 虚拟账户注册 Windows 服务。
+
+版本号 `1.0.0-alpha.5.2` 替换为当前发布版本即可。
+
+### Ubuntu / Debian（amd64）
+
+```bash
+VER=1.0~alpha.5.2   # Debian 版本格式（用 ~ 分隔预发布）
+for pkg in npsd nps-runner nps-gateway nps-registry; do
+    curl -LO "https://github.com/labacacia/nps-daemons/releases/download/v1.0.0-alpha.5.2/${pkg}_${VER}_amd64.deb"
+    sudo dpkg -i "${pkg}_${VER}_amd64.deb"
+done
+```
+
+配置覆盖文件（升级时保留）：`/etc/nps/<daemon>/env`
+
+数据目录：`/var/lib/nps/<daemon>/`（系统用户 `npsd` 等专属账户所有）
+
+### Fedora / RHEL（x86_64）
+
+```bash
+VER=1.0.0-alpha.5.2
+RPM_VER=1.0.0
+RPM_REL=0.alpha.5.2.1
+for pkg in npsd nps-runner nps-gateway nps-registry; do
+    curl -LO "https://github.com/labacacia/nps-daemons/releases/download/v${VER}/${pkg}-${RPM_VER}-${RPM_REL}.x86_64.rpm"
+    sudo rpm -i "${pkg}-${RPM_VER}-${RPM_REL}.x86_64.rpm"
+done
+```
+
+配置覆盖文件：`/etc/nps/<daemon>/env`
+
+数据目录：`/var/lib/nps/<daemon>/`
+
+### Windows（x64，MSI）
+
+```powershell
+$ver = "1.0.0-alpha.5.2"
+foreach ($pkg in @("npsd","nps-runner","nps-gateway","nps-registry")) {
+    $file = "$pkg-$ver-win-x64.msi"
+    Invoke-WebRequest -Uri "https://github.com/labacacia/nps-daemons/releases/download/v$ver/$file" -OutFile $file
+    Start-Process msiexec.exe -ArgumentList "/i $file /quiet /norestart" -Wait
+}
+# 服务自动启动，验证：
+Get-Service npsd, nps-runner, nps-gateway, nps-registry
+```
+
+安装路径：`%ProgramFiles%\LabAcacia\<daemon>\`
+
+数据目录：`%ProgramData%\LabAcacia\<daemon>\`
+
+### 卸载
+
+```bash
+# Debian/Ubuntu
+sudo apt remove npsd nps-runner nps-gateway nps-registry
+
+# Fedora/RHEL
+sudo rpm -e npsd nps-runner nps-gateway nps-registry
+```
+
+```powershell
+# Windows
+foreach ($pkg in @("npsd","nps-runner","nps-gateway","nps-registry")) {
+    Get-Package $pkg | Uninstall-Package
+}
+```
 
 ## 架构
 

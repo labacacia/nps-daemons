@@ -6,6 +6,43 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ---
 
+## [1.0.0-alpha.5.2] — 2026-05-03
+
+### Tracking the suite
+
+Tracks NPS suite `v1.0.0-alpha.5.2`. No daemon-specific code changes — the
+`estimated_npt → cgn_est` wire field rename (NPS-Dev#17) lands in the protocol
+layer; all downstream components must upgrade together per suite-wide versioning
+policy.
+
+---
+
+## [1.0.0-alpha.5] — 2026-05-01
+
+### Added
+
+- **Inbox watcher + worker spawn** — full L3 FaaS runtime replacing the
+  alpha.3/alpha.4 heartbeat skeleton:
+  - Self-registers with local `npsd` on startup (`POST /v1/agents`,
+    idempotent — 409 returns existing NID); retries with exponential
+    backoff up to 20 attempts.
+  - Long-polls the runner's inbox (`GET /v1/inbox/{nid}?wait=N&batch=B`)
+    at a configurable interval (`NPS_RUNNER_POLL_INTERVAL_MS`, default 1 s).
+  - Deserialises JSON spawn-spec messages; see README for full field list.
+  - Spawns worker subprocesses with the given `command` / `args` /
+    `env` / `work_dir`.
+  - Captures `stdout` + `stderr` to `NPS_RUNNER_LOG_DIR/{task_id}.log`
+    with `[stdout]`/`[stderr]` prefixes.
+  - Monitor loop (5 s tick) enforces `idle_timeout_seconds` (silence
+    since last output) and `max_runtime_seconds` (hard wall-clock limit,
+    default 4 h).
+  - On worker exit: acks the inbox message; if `reply_to` is set, POSTs
+    a JSON completion notification to that NID.
+  - Concurrency cap (`NPS_RUNNER_MAX_CONCURRENT_WORKERS`, default 8) —
+    messages arriving when at capacity stay unacked and reappear next poll.
+
+---
+
 ## [1.0.0-alpha.4] — 2026-04-30
 
 ### Tracking the suite
@@ -39,5 +76,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ---
 
+[1.0.0-alpha.5.2]: https://github.com/labacacia/nps-daemons/releases/tag/v1.0.0-alpha.5.2
+[1.0.0-alpha.5]: https://github.com/labacacia/nps-daemons/releases/tag/v1.0.0-alpha.5
 [1.0.0-alpha.4]: https://github.com/labacacia/nps-daemons/releases/tag/v1.0.0-alpha.4
 [1.0.0-alpha.3]: https://github.com/labacacia/nps-daemons/releases/tag/v1.0.0-alpha.3

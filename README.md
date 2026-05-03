@@ -71,8 +71,8 @@ Each subdirectory ships a self-contained Dockerfile:
 
 ```bash
 cd npsd
-docker build -t labacacia/npsd:1.0.0-alpha.4 .
-docker run --rm -p 17433:17433 -v npsd-data:/data labacacia/npsd:1.0.0-alpha.4
+docker build -t labacacia/npsd:1.0.0-alpha.5.2 .
+docker run --rm -p 17433:17433 -v npsd-data:/data labacacia/npsd:1.0.0-alpha.5.2
 ```
 
 The .NET 10 SDK works for source builds too:
@@ -86,6 +86,91 @@ dotnet run
 All daemons depend on the published `LabAcacia.NPS.*` NuGet packages
 (`Core`, `NIP`, `NDP`, `NWP`, `NWP.Anchor`, `NOP`) — no monorepo
 dependency.
+
+## Install from package (no Docker)
+
+Self-contained native packages — no .NET runtime required — are published as
+[GitHub Release assets](https://github.com/labacacia/nps-daemons/releases) alongside
+the Docker images. Each package installs a systemd service (Linux) or a Windows service
+registered under a virtual `NT SERVICE\<daemon>` account.
+
+Replace `1.0.0-alpha.5.2` with the current release tag as needed.
+
+### Ubuntu / Debian (amd64)
+
+```bash
+VER=1.0.0-alpha.5.2
+for pkg in npsd nps-runner nps-gateway nps-registry; do
+    curl -LO "https://github.com/labacacia/nps-daemons/releases/download/v${VER}/${pkg}_${VER//-alpha./~alpha.}_amd64.deb"
+    sudo dpkg -i "${pkg}_${VER//-alpha./~alpha.}_amd64.deb"
+done
+```
+
+Or install only the daemons you need, e.g.:
+
+```bash
+VER=1.0.0~alpha.5.2   # Debian version format (~ replaces -)
+curl -LO "https://github.com/labacacia/nps-daemons/releases/download/v1.0.0-alpha.5.2/npsd_${VER}_amd64.deb"
+sudo dpkg -i "npsd_${VER}_amd64.deb"
+sudo systemctl status npsd
+```
+
+Config override file (preserved on upgrade): `/etc/nps/npsd/env`
+
+Data directory: `/var/lib/nps/npsd/` (owned by system user `npsd`)
+
+### Fedora / RHEL (x86_64)
+
+```bash
+VER=1.0.0-alpha.5.2
+RPM_VER=1.0.0
+RPM_REL=0.alpha.5.2.1
+for pkg in npsd nps-runner nps-gateway nps-registry; do
+    curl -LO "https://github.com/labacacia/nps-daemons/releases/download/v${VER}/${pkg}-${RPM_VER}-${RPM_REL}.x86_64.rpm"
+    sudo rpm -i "${pkg}-${RPM_VER}-${RPM_REL}.x86_64.rpm"
+done
+```
+
+For stable releases (`VER=1.0.0`) the RPM `Release` field is `1` instead of
+`0.alpha.5.2.1`.
+
+Config override file: `/etc/nps/npsd/env`
+
+Data directory: `/var/lib/nps/npsd/` (owned by system user `npsd`)
+
+### Windows (x64, MSI)
+
+```powershell
+$ver = "1.0.0-alpha.5.2"
+foreach ($pkg in @("npsd","nps-runner","nps-gateway","nps-registry")) {
+    $file = "$pkg-$ver-win-x64.msi"
+    Invoke-WebRequest -Uri "https://github.com/labacacia/nps-daemons/releases/download/v$ver/$file" -OutFile $file
+    Start-Process msiexec.exe -ArgumentList "/i $file /quiet /norestart" -Wait
+}
+# Services start automatically; verify:
+Get-Service npsd, nps-runner, nps-gateway, nps-registry
+```
+
+Install path: `%ProgramFiles%\LabAcacia\<daemon>\`
+
+Data directory: `%ProgramData%\LabAcacia\<daemon>\`
+
+### Uninstall
+
+```bash
+# Debian/Ubuntu
+sudo apt remove npsd nps-runner nps-gateway nps-registry
+
+# Fedora/RHEL
+sudo rpm -e npsd nps-runner nps-gateway nps-registry
+```
+
+```powershell
+# Windows
+foreach ($pkg in @("npsd","nps-runner","nps-gateway","nps-registry")) {
+    Get-Package $pkg | Uninstall-Package
+}
+```
 
 ## Architecture
 

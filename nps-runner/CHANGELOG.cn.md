@@ -6,6 +6,39 @@
 
 ---
 
+## [1.0.0-alpha.5.2] —— 2026-05-03
+
+### 跟随套件
+
+跟随 NPS 套件 `v1.0.0-alpha.5.2`。无 daemon 侧代码变更 ——
+`estimated_npt → cgn_est` wire 字段重命名（NPS-Dev#17）位于协议层；
+按套件统一版本策略，所有下游组件须同步升级。
+
+---
+
+## [1.0.0-alpha.5] —— 2026-05-01
+
+### 新增
+
+- **Inbox watcher + worker spawn** —— 完整 L3 FaaS runtime，替换
+  alpha.3/alpha.4 的心跳骨架：
+  - 启动时向本机 `npsd` 自注册（`POST /v1/agents`，幂等 —— 409 返回
+    现有 NID）；失败时以指数退避最多重试 20 次。
+  - 以可配置间隔（`NPS_RUNNER_POLL_INTERVAL_MS`，默认 1 秒）对
+    runner inbox 做 long-poll（`GET /v1/inbox/{nid}?wait=N&batch=B`）。
+  - 反序列化 JSON spawn-spec 消息，字段详见 README。
+  - 以指定 `command` / `args` / `env` / `work_dir` 拉起 worker 子进程。
+  - `stdout` + `stderr` 捕获至
+    `NPS_RUNNER_LOG_DIR/{task_id}.log`，带 `[stdout]`/`[stderr]` 前缀。
+  - 监控循环（5 秒 tick）强制执行 `idle_timeout_seconds`（自上次输出
+    以来的静默时间）和 `max_runtime_seconds`（硬性墙钟上限，默认 4 小时）。
+  - Worker 退出时：ack inbox 消息；若设置了 `reply_to`，向该 NID POST
+    JSON 完成通知。
+  - 并发上限可配置（`NPS_RUNNER_MAX_CONCURRENT_WORKERS`，默认 8）——
+    到达上限时收到的消息保持未 ack，下次轮询重新出现。
+
+---
+
 ## [1.0.0-alpha.4] —— 2026-04-30
 
 ### 跟随套件的协议变更
@@ -36,5 +69,7 @@
 
 ---
 
+[1.0.0-alpha.5.2]: https://gitee.com/labacacia/nps-daemons/releases/tag/v1.0.0-alpha.5.2
+[1.0.0-alpha.5]: https://gitee.com/labacacia/nps-daemons/releases/tag/v1.0.0-alpha.5
 [1.0.0-alpha.4]: https://gitee.com/labacacia/nps-daemons/releases/tag/v1.0.0-alpha.4
 [1.0.0-alpha.3]: https://gitee.com/labacacia/nps-daemons/releases/tag/v1.0.0-alpha.3

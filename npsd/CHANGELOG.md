@@ -6,6 +6,40 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ---
 
+## [1.0.0-alpha.5.2] — 2026-05-03
+
+### Tracking the suite
+
+Tracks NPS suite `v1.0.0-alpha.5.2`. No daemon-specific code changes — the
+`estimated_npt → cgn_est` wire field rename (NPS-Dev#17) lands in the protocol
+layer; all downstream components must upgrade together per suite-wide versioning
+policy.
+
+---
+
+## [1.0.0-alpha.5] — 2026-05-01
+
+### Added
+
+- **`AnchorNodeMiddleware`** — `topology:read` capability gating (NPS-CR-0001):
+  callers without `topology:read` receive HTTP 403 /
+  `NWP-UNAUTHORIZED-CAPABILITY` on `topology.snapshot` and
+  `topology.stream` endpoints.  `cgn_est` integer field added to every
+  topology event payload.
+- **`NPS-SERVER-UNSUPPORTED` (HTTP 501)** — unknown reserved NWP frame types
+  now return `501 Not Implemented` with error code
+  `NWP-RESERVED-TYPE-UNSUPPORTED` instead of a generic 4xx.
+- **AssuranceLevel empty-string fix** — `LabAcacia.NPS.NIP` `1.0.0-alpha.5`
+  treats an empty `assurance_level` wire value identically to a missing
+  field (`anonymous`).
+- **NDP DNS TXT fallback** — `LabAcacia.NPS.NDP` `1.0.0-alpha.5` adds
+  `ResolveViaDns` with an injectable `DnsTxtLookup` interface; the system
+  DNS resolver is used by default.
+- 17 integration tests covering the updated topology behaviour and 501
+  response mapping.
+
+---
+
 ## [1.0.0-alpha.4] — 2026-04-30
 
 ### Added
@@ -71,5 +105,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ---
 
+[1.0.0-alpha.5.2]: https://github.com/labacacia/nps-daemons/releases/tag/v1.0.0-alpha.5.2
+[1.0.0-alpha.5]: https://github.com/labacacia/nps-daemons/releases/tag/v1.0.0-alpha.5
 [1.0.0-alpha.4]: https://github.com/labacacia/nps-daemons/releases/tag/v1.0.0-alpha.4
 [1.0.0-alpha.3]: https://github.com/labacacia/nps-daemons/releases/tag/v1.0.0-alpha.3

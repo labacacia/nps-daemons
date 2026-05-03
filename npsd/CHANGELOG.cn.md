@@ -6,6 +6,37 @@
 
 ---
 
+## [1.0.0-alpha.5.2] —— 2026-05-03
+
+### 跟随套件
+
+跟随 NPS 套件 `v1.0.0-alpha.5.2`。无 daemon 侧代码变更 ——
+`estimated_npt → cgn_est` wire 字段重命名（NPS-Dev#17）位于协议层；
+按套件统一版本策略，所有下游组件须同步升级。
+
+---
+
+## [1.0.0-alpha.5] —— 2026-05-01
+
+### 新增
+
+- **`AnchorNodeMiddleware`** —— `topology:read` 能力门控（NPS-CR-0001）：
+  不带 `topology:read` 的调用方访问 `topology.snapshot` /
+  `topology.stream` 端点时收到 HTTP 403 /
+  `NWP-UNAUTHORIZED-CAPABILITY`。每个拓扑事件 payload 新增
+  `cgn_est` 整型字段。
+- **`NPS-SERVER-UNSUPPORTED`（HTTP 501）** —— 未知保留 NWP 帧类型现在
+  返回 `501 Not Implemented` + 错误码 `NWP-RESERVED-TYPE-UNSUPPORTED`，
+  不再返回通用 4xx。
+- **AssuranceLevel 空字符串修复** —— `LabAcacia.NPS.NIP`
+  `1.0.0-alpha.5` 将空的 `assurance_level` wire 值等同于字段缺失
+  （`anonymous`）。
+- **NDP DNS TXT 回退解析** —— `LabAcacia.NPS.NDP` `1.0.0-alpha.5` 新增
+  `ResolveViaDns`，注入式 `DnsTxtLookup` 接口，默认使用系统 DNS 解析器。
+- 17 个集成测试覆盖更新后的拓扑行为和 501 响应映射。
+
+---
+
 ## [1.0.0-alpha.4] —— 2026-04-30
 
 ### 新增
@@ -72,5 +103,7 @@
 
 ---
 
+[1.0.0-alpha.5.2]: https://gitee.com/labacacia/nps-daemons/releases/tag/v1.0.0-alpha.5.2
+[1.0.0-alpha.5]: https://gitee.com/labacacia/nps-daemons/releases/tag/v1.0.0-alpha.5
 [1.0.0-alpha.4]: https://gitee.com/labacacia/nps-daemons/releases/tag/v1.0.0-alpha.4
 [1.0.0-alpha.3]: https://gitee.com/labacacia/nps-daemons/releases/tag/v1.0.0-alpha.3
