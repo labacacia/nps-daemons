@@ -70,7 +70,7 @@
   解析 + worker 生命周期在 L3 阶段（alpha.5+）。
 - **`nps-gateway`**（Layer 2，公网 Internet ingress）—— Phase 1 骨架：
   `:8080` HTTP 监听 + `/health`，文档化里程碑。TLS 卸载、rate-limit、
-  NeuronHub 鉴权、NPT 计费、NPS-RFC-0004 reputation 查询、
+  NeuronHub 鉴权、CGN 计费、NPS-RFC-0004 reputation 查询、
   NPS-CR-0001 Anchor Node 中间件接线在 alpha.4 → alpha.5。
 - **`nps-registry`**（Layer 2，跨机 NDP 发现）—— Phase 1 骨架：
   在 NDP 可选专用端口 `17436` 监听；`Resolve` / `Graph` / `Announce`

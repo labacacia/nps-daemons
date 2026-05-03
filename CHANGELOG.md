@@ -79,7 +79,7 @@ for the full suite-level rollup.
   stage (alpha.5+).
 - **`nps-gateway`** (Layer 2, public Internet ingress) — Phase 1
   skeleton: HTTP listener on `:8080` + `/health` documenting planned
-  milestones. TLS termination, rate-limit, NeuronHub auth, NPT debit,
+  milestones. TLS termination, rate-limit, NeuronHub auth, CGN debit,
   NPS-RFC-0004 reputation lookup, and NPS-CR-0001 Anchor Node
   middleware wiring land alpha.4 → alpha.5.
 - **`nps-registry`** (Layer 2, cross-machine NDP discovery) — Phase 1

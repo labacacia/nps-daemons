@@ -21,8 +21,8 @@ RUN dotnet publish Npsd.csproj -c Release -o /app/publish --no-restore
 FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS runtime
 WORKDIR /app
 
-RUN addgroup --gid 1000 npsd \
- && adduser --uid 1000 --gid 1000 --disabled-password --gecos "" npsd
+RUN groupadd --gid 1000 npsd \
+ && useradd --uid 1000 --gid 1000 --no-create-home --shell /usr/sbin/nologin npsd
 
 # Persistent state (root keypair + future inbox storage).
 RUN mkdir -p /data && chown npsd:npsd /data

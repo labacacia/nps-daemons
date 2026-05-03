@@ -5,7 +5,7 @@ English | [中文版](./README.cn.md)
 > Reference implementation of the public-facing NPS Internet ingress.
 > Translates NPS-over-TLS traffic from the public internet into local
 > frames; handles TLS termination, rate limiting, NeuronHub-customer
-> authentication, NPT debit triggering, [NPS-RFC-0004](https://github.com/labacacia/NPS-Release/blob/main/spec/rfcs/NPS-RFC-0004-nid-reputation-log.md)
+> authentication, CGN debit triggering, [NPS-RFC-0004](https://github.com/labacacia/NPS-Release/blob/main/spec/rfcs/NPS-RFC-0004-nid-reputation-log.md)
 > reputation checks, and DDoS defense. See
 > [`docs/daemons/architecture.md`](../docs/architecture.md)
 > for the broader six-daemon topology.
@@ -14,7 +14,7 @@ English | [中文版](./README.cn.md)
 
 **Phase 1 skeleton.** Public-facing HTTP listener with a `/health`
 endpoint that documents the planned milestones. Real ingress logic
-(TLS termination, rate limit, auth, NPT debit, reputation lookup,
+(TLS termination, rate limit, auth, CGN debit, reputation lookup,
 Anchor Node middleware wiring per [NPS-CR-0001](https://github.com/labacacia/NPS-Release/blob/main/spec/cr/NPS-CR-0001-anchor-bridge-split.md))
 lands at alpha.5+.
 

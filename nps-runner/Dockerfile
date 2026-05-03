@@ -13,8 +13,8 @@ RUN dotnet publish NpsRunner.csproj -c Release -o /app/publish --no-restore
 FROM mcr.microsoft.com/dotnet/runtime:10.0 AS runtime
 WORKDIR /app
 
-RUN addgroup --gid 1000 npsrunner \
- && adduser --uid 1000 --gid 1000 --disabled-password --gecos "" npsrunner
+RUN groupadd --gid 1000 npsrunner \
+ && useradd --uid 1000 --gid 1000 --no-create-home --shell /usr/sbin/nologin npsrunner
 
 COPY --from=build /app/publish .
 RUN chown -R npsrunner:npsrunner /app

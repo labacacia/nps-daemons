@@ -3,7 +3,7 @@
 # `nps-gateway` —— NPS Daemon（第二层，Internet 入站）
 
 > 公网 NPS Internet 入站的参考实现。把公网上来的 NPS-over-TLS 流量翻译成
-> 本机协议帧；处理 TLS termination、限速、NeuronHub 用户鉴权、NPT 扣款触发、
+> 本机协议帧；处理 TLS termination、限速、NeuronHub 用户鉴权、CGN 扣款触发、
 > [NPS-RFC-0004](https://gitee.com/labacacia/NPS-Release/blob/main/spec/rfcs/NPS-RFC-0004-nid-reputation-log.cn.md) 声誉检查、
 > DDoS 防护。完整六-daemon 拓扑见
 > [`docs/daemons/architecture.cn.md`](../docs/architecture.cn.md)。
@@ -11,7 +11,7 @@
 ## 状态 —— alpha.4
 
 **Phase 1 骨架。** 公网 HTTP 监听 + `/health` 端点（端点本身记录后续里程碑）。
-实际 ingress 逻辑（TLS termination、限速、鉴权、NPT 扣款、声誉查询、
+实际 ingress 逻辑（TLS termination、限速、鉴权、CGN 扣款、声誉查询、
 [NPS-CR-0001](https://gitee.com/labacacia/NPS-Release/blob/main/spec/cr/NPS-CR-0001-anchor-bridge-split.md) Anchor Node 中间件
 接入）在 alpha.4 → alpha.5 落地。
 

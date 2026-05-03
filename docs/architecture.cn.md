@@ -29,7 +29,7 @@
 │ │ ③ nps-gateway    │                  │ ④ nps-registry   │           │
 │ │ Internet 入站    │                  │ 跨机 NDP         │           │
 │ │ NPS-over-TLS     │                  │ resolve+graph    │           │
-│ │ 限速 + NPT 扣款 │                  │ （L2 阶段）      │           │
+│ │ 限速 + CGN 扣款 │                  │ （L2 阶段）      │           │
 │ └────────┬─────────┘                  └────────┬─────────┘           │
 └──────────┼─────────────────────────────────────┼─────────────────────┘
            ▼                                     ▼
@@ -68,7 +68,7 @@
 
 #### ③ `nps-gateway` —— Internet 入站网关
 
-- **翻译** Internet 上来的 NPS-over-TLS 流量为本机协议帧。处理 TLS termination、限速、NeuronHub 用户鉴权、NPT 扣款触发、声誉检查（基于 [NPS-RFC-0004](https://gitee.com/labacacia/NPS-Release/blob/main/spec/rfcs/NPS-RFC-0004-nid-reputation-log.cn.md)）、DDoS 防护。
+- **翻译** Internet 上来的 NPS-over-TLS 流量为本机协议帧。处理 TLS termination、限速、NeuronHub 用户鉴权、CGN 扣款触发、声誉检查（基于 [NPS-RFC-0004](https://gitee.com/labacacia/NPS-Release/blob/main/spec/rfcs/NPS-RFC-0004-nid-reputation-log.cn.md)）、DDoS 防护。
 - **为什么必须常驻**：对外暴露的端口必须始终在听。
 - **为什么与 `npsd` 分离**：`npsd` 默认只 bind 127.0.0.1；网关 bind 公网。攻击面、安全策略、运维边界完全不同。`npsd` 失败影响本机所有 NPS 流量；网关失败只影响外部入站 —— 二者必须能独立重启。
 - **说明**：这是**进程级**名字；规范层"集群控制平面"角色现在叫 **Anchor Node**（NWP），见 [NPS-CR-0001](https://gitee.com/labacacia/NPS-Release/blob/main/spec/cr/NPS-CR-0001-anchor-bridge-split.md)。`nps-gateway` 进程 MAY 承载 Anchor Node 中间件，但不是必须。
@@ -90,7 +90,7 @@
 
 #### ⑥ `nps-ledger` —— 审计与合规日志收集器
 
-- **append-only 收集点**，K-of-N 审计共识所需 —— NeuronHub 的 NPT 结算正确性最终靠这一层提供证据。实现 [NPS-RFC-0004](https://gitee.com/labacacia/NPS-Release/blob/main/spec/rfcs/NPS-RFC-0004-nid-reputation-log.cn.md) 定义的 Certificate-Transparency 风格日志：提交、查询、signed tree head、inclusion proof。
+- **append-only 收集点**，K-of-N 审计共识所需 —— NeuronHub 的 CGN 结算正确性最终靠这一层提供证据。实现 [NPS-RFC-0004](https://gitee.com/labacacia/NPS-Release/blob/main/spec/rfcs/NPS-RFC-0004-nid-reputation-log.cn.md) 定义的 Certificate-Transparency 风格日志：提交、查询、signed tree head、inclusion proof。
 - **为什么必须常驻**：审计日志是连续 append 流；接收端不能 down，否则有 gap。
 - **为什么独立**：审计的隔离要求最强 —— `nps-ledger` MUST NOT 信任被审计方的进程，所以必须跑在独立 trust domain。即便 `npsd` 被攻陷，`nps-ledger` 还能提供独立证据。
 
@@ -113,7 +113,7 @@
 |--------|---------|----------------|----------|------------|
 | `npsd` | L1 最小集：`127.0.0.1:17433` 监听、root keypair 生成、`/.nwm`、基础 `/health`、本机 NDP 上发 AnnounceFrame | L1+：sub-NID 签发、per-NID inbox 队列、NCP 原生模式前导 runtime（NPS-RFC-0001）| 推送到 resident agent | 完整 L1 + L2 合规 |
 | `nps-runner` | 骨架 + Generic-Host worker；记录 inbox-watch 契约 | Inbox poller 接入 `npsd` | Spawn 生命周期、隔离 | L3 合规 |
-| `nps-gateway` | 骨架 + `0.0.0.0:443` HTTP 监听（TLS 关）；记录 NeuronHub 集成点 | Anchor Node 中间件接入（NPS-CR-0001 wiring）| 声誉查询（NPS-RFC-0004）| DDoS、NPT 扣款 |
+| `nps-gateway` | 骨架 + `0.0.0.0:443` HTTP 监听（TLS 关）；记录 NeuronHub 集成点 | Anchor Node 中间件接入（NPS-CR-0001 wiring）| 声誉查询（NPS-RFC-0004）| DDoS、CGN 扣款 |
 | `nps-registry` | 骨架 + HTTP 监听；占位 `Resolve`/`Graph` 端点返回 `NDP-REGISTRY-UNAVAILABLE` | **真实 SQLite 注册中心**：Announce / Resolve / Graph 全部可用；TTL lazy expiry；单调 graph seq；文件或内存通过 env 选择 | HA cluster 模式 | Federation |
 | `nps-cloud-ca` | 骨架；实际签发交给 `tools/nip-ca-server*`（6 个多语言 OSS CA）| NPS-RFC-0002 X.509 + ACME 接入（骨架；完整签发在 nip-ca-server）| HSM 集成 | 跨 CA 信任 |
 | `nps-ledger` | 骨架 + 内存日志，遵循 NPS-RFC-0004 Phase 1 条目结构 | **Phase 2**：SQLite 持久化、RFC 9162 Merkle 树、operator 签名 STH、`/v1/log/proof` 包含证明端点 | STH gossip、公共镜像 | 公共日志认证 |

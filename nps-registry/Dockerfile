@@ -13,8 +13,8 @@ RUN dotnet publish NpsRegistry.csproj -c Release -o /app/publish --no-restore
 FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS runtime
 WORKDIR /app
 
-RUN addgroup --gid 1000 npsreg \
- && adduser --uid 1000 --gid 1000 --disabled-password --gecos "" npsreg
+RUN groupadd --gid 1000 npsreg \
+ && useradd --uid 1000 --gid 1000 --no-create-home --shell /usr/sbin/nologin npsreg
 
 COPY --from=build /app/publish .
 RUN chown -R npsreg:npsreg /app

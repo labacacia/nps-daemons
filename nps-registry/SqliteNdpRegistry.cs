@@ -164,6 +164,35 @@ public sealed class SqliteNdpRegistry : INdpRegistry, IDisposable
         return rdr.Read() ? MapRow(rdr) : null;
     }
 
+    public NdpResolveResult? ResolveViaDns(string target, IDnsTxtLookup? dnsLookup = null)
+    {
+        // 1. Try the persistent registry first.
+        var cached = Resolve(target);
+        if (cached is not null)
+            return cached;
+
+        // 2. Extract host from nwp:// URL.
+        if (!target.StartsWith("nwp://", StringComparison.OrdinalIgnoreCase))
+            return null;
+        var rest      = target["nwp://".Length..];
+        var slashIdx  = rest.IndexOf('/');
+        var host      = slashIdx < 0 ? rest : rest[..slashIdx];
+        if (string.IsNullOrWhiteSpace(host))
+            return null;
+
+        // 3. DNS TXT fallback on _nps-node.{host}.
+        var lookup     = dnsLookup ?? new SystemDnsTxtLookup();
+        var txtRecords = lookup.Lookup($"_nps-node.{host}");
+        foreach (var txt in txtRecords)
+        {
+            var result = InMemoryNdpRegistry.ParseNpsTxtRecord(txt, host);
+            if (result is not null)
+                return result;
+        }
+
+        return null;
+    }
+
     /// <summary>Returns the current monotonic graph sequence counter.</summary>
     public ulong GetSeq()
     {

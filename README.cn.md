@@ -22,7 +22,7 @@
 |----|--------|----------|------------------------|
 | 1 | [`npsd`](./npsd/) | `127.0.0.1:17433` | L1 最小集：HTTP 监听、root keypair 生成（POSIX `0600`）、`/.nwm`、`/health`。|
 | 1 | [`nps-runner`](./nps-runner/) | —（worker）| Phase 1 骨架 —— Generic Host 脚手架 + 30 秒心跳。Inbox 监听 + spawn-spec 解析在 alpha.5+。|
-| 2 | [`nps-gateway`](./nps-gateway/) | `:8080` | Phase 1 骨架 —— 公网 HTTP 监听 + `/health`。TLS 卸载 + rate limit + auth + NPT 计费 + reputation 查询在 alpha.4 → alpha.5。|
+| 2 | [`nps-gateway`](./nps-gateway/) | `:8080` | Phase 1 骨架 —— 公网 HTTP 监听 + `/health`。TLS 卸载 + rate limit + auth + CGN 计费 + reputation 查询在 alpha.4 → alpha.5。|
 | 2 | [`nps-registry`](./nps-registry/) | `:17436` | Phase 1 骨架 —— NDP `Resolve` / `Graph` / `Announce` 全部返回 `NDP-REGISTRY-UNAVAILABLE`，方便消费者预先接线 + 优雅降级。SQLite 实仓在 alpha.4。|
 
 每个 daemon 在自己的子目录里有独立的 `Dockerfile` / `docker-compose.yml` /

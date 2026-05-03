@@ -5,7 +5,7 @@
 // See docs/daemons/architecture.md for the role this binary plays.
 //
 // Phase 1 (v1.0-alpha.3): public-facing HTTP listener with /health
-// only. TLS termination, rate limit, NeuronHub auth, NPT debit, and
+// only. TLS termination, rate limit, NeuronHub auth, CGN debit, and
 // reputation policy lookup all land in alpha.4 onwards.
 //
 // Naming note: this is the *process* called "nps-gateway", distinct from
@@ -46,11 +46,11 @@ app.MapGet("/health", () => Results.Json(new
         "TLS termination (alpha.4)",
         "rate limiting (alpha.4)",
         "NeuronHub-customer authentication (alpha.4)",
-        "NPT debit trigger (alpha.4)",
+        "CGN debit trigger (alpha.4)",
         "NPS-RFC-0004 reputation policy lookup (alpha.5)",
         "NPS.NWP.Anchor middleware wiring (alpha.4)",
     },
 }));
 
-app.Logger.LogInformation("nps-gateway v1.0.0-alpha.3 starting on configured port (Phase 1 skeleton — TLS / auth / NPT / reputation land at alpha.4+; see docs/daemons/architecture.md)");
+app.Logger.LogInformation("nps-gateway v1.0.0-alpha.3 starting on configured port (Phase 1 skeleton — TLS / auth / CGN / reputation land at alpha.4+; see docs/daemons/architecture.md)");
 app.Run();

@@ -13,8 +13,8 @@ RUN dotnet publish NpsGateway.csproj -c Release -o /app/publish --no-restore
 FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS runtime
 WORKDIR /app
 
-RUN addgroup --gid 1000 npsgw \
- && adduser --uid 1000 --gid 1000 --disabled-password --gecos "" npsgw
+RUN groupadd --gid 1000 npsgw \
+ && useradd --uid 1000 --gid 1000 --no-create-home --shell /usr/sbin/nologin npsgw
 
 COPY --from=build /app/publish .
 RUN chown -R npsgw:npsgw /app

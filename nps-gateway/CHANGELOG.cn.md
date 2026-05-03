@@ -15,7 +15,7 @@
   （`topology.snapshot` / `topology.stream`）。本 daemon **暂未接线** ——
   Anchor 中间件集成仍是 alpha.4 → alpha.5 的工作。
 - 自 alpha.3 无功能变更 —— 仍是 `:8080` HTTP 监听 + `/health` 骨架，
-  TLS / rate-limit / 鉴权 / NPT 计费 / reputation 查询仍处于规划阶段。
+  TLS / rate-limit / 鉴权 / CGN 计费 / reputation 查询仍处于规划阶段。
 
 ---
 
@@ -33,7 +33,7 @@
 
 - TLS 卸载（alpha.3 仅 HTTP，TLS 在上游处理）。
 - Rate limit（按 NID / 按客户 / 按路由）。
-- NeuronHub 客户鉴权 + 按客户触发 NPT 计费。
+- NeuronHub 客户鉴权 + 按客户触发 CGN 计费。
 - 路由前的 NPS-RFC-0004 reputation 查询。
 - `LabAcacia.NPS.NWP.Anchor` Anchor Node 中间件接线（NPS-CR-0001）。
 - DDoS 防护（慢连接超时、请求频率上限、fail2ban 钩子）。

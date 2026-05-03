@@ -17,7 +17,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   Anchor middleware integration remains the alpha.4 → alpha.5 work.
 - No functional changes in the gateway itself since alpha.3 — still the
   `:8080` HTTP listener + `/health` skeleton documenting the planned
-  TLS / rate-limit / auth / NPT-debit / reputation-lookup path.
+  TLS / rate-limit / auth / CGN-debit / reputation-lookup path.
 
 ---
 
@@ -35,7 +35,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 - TLS termination (alpha.3 ships plain HTTP — terminate upstream).
 - Rate limiting (per-NID + per-customer + per-route).
-- NeuronHub-customer authentication and per-customer NPT debit triggering.
+- NeuronHub-customer authentication and per-customer CGN debit triggering.
 - NPS-RFC-0004 reputation lookup before routing.
 - `LabAcacia.NPS.NWP.Anchor` Anchor Node middleware wiring (NPS-CR-0001).
 - DDoS defence (slow-loris timeout, request-rate caps, fail2ban hooks).

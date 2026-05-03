@@ -31,7 +31,7 @@ English | [中文版](./architecture.cn.md)
 │ │ ③ nps-gateway    │                  │ ④ nps-registry   │           │
 │ │ Public Internet  │                  │ Cross-machine    │           │
 │ │ NPS-over-TLS     │                  │ NDP resolve+graph│           │
-│ │ rate-limit + NPT │                  │ (L2 stage)       │           │
+│ │ rate-limit + CGN │                  │ (L2 stage)       │           │
 │ └────────┬─────────┘                  └────────┬─────────┘           │
 └──────────┼─────────────────────────────────────┼─────────────────────┘
            ▼                                     ▼
@@ -70,7 +70,7 @@ English | [中文版](./architecture.cn.md)
 
 #### ③ `nps-gateway` — Internet ingress
 
-- **Translates** Internet-side NPS-over-TLS traffic into local frames. Performs TLS termination, rate limiting, NeuronHub-customer authentication, NPT debit triggering, reputation checks (against [NPS-RFC-0004](https://github.com/labacacia/NPS-Release/blob/main/spec/rfcs/NPS-RFC-0004-nid-reputation-log.md)), DDoS defense.
+- **Translates** Internet-side NPS-over-TLS traffic into local frames. Performs TLS termination, rate limiting, NeuronHub-customer authentication, CGN debit triggering, reputation checks (against [NPS-RFC-0004](https://github.com/labacacia/NPS-Release/blob/main/spec/rfcs/NPS-RFC-0004-nid-reputation-log.md)), DDoS defense.
 - **Why always-on**: the publicly bound port must always be listening.
 - **Why separated from `npsd`**: `npsd` is bound to loopback by default; the gateway binds public addresses. Attack surface, security posture, and operational scope differ. `npsd` failure affects all local NPS traffic; gateway failure only affects external inbound — the two MUST be independently restartable.
 - **Note**: This is a **process-level** name; the *spec*-level role of cluster control plane is now called **Anchor Node** in NWP, see [NPS-CR-0001](https://github.com/labacacia/NPS-Release/blob/main/spec/cr/NPS-CR-0001-anchor-bridge-split.md). The `nps-gateway` process MAY host an Anchor Node middleware but is not constrained to.
@@ -92,7 +92,7 @@ English | [中文版](./architecture.cn.md)
 
 #### ⑥ `nps-ledger` — Audit / compliance log collector
 
-- **Append-only collection point** for the K-of-N audit consensus that NeuronHub NPT settlement ultimately depends on. Implements the Certificate-Transparency-style log defined by [NPS-RFC-0004](https://github.com/labacacia/NPS-Release/blob/main/spec/rfcs/NPS-RFC-0004-nid-reputation-log.md): submission, query, signed tree head, inclusion proofs.
+- **Append-only collection point** for the K-of-N audit consensus that NeuronHub CGN settlement ultimately depends on. Implements the Certificate-Transparency-style log defined by [NPS-RFC-0004](https://github.com/labacacia/NPS-Release/blob/main/spec/rfcs/NPS-RFC-0004-nid-reputation-log.md): submission, query, signed tree head, inclusion proofs.
 - **Why always-on**: audit logs are a continuous append stream; the receiver cannot be down or there will be gaps.
 - **Why independent**: audit isolation requirements are the strongest of all six daemons — `nps-ledger` MUST NOT trust the processes it audits, so it must run in its own trust domain. Even if `npsd` is compromised, `nps-ledger` should still produce independent evidence.
 
@@ -115,7 +115,7 @@ English | [中文版](./architecture.cn.md)
 |--------|---------|------------------------|----------|------------|
 | `npsd` | L1 minimum: HTTP listener on `127.0.0.1:17433`, root keypair generation, `/.nwm`, baseline `/health`, AnnounceFrame on local NDP | L1+: sub-NID issuance, per-NID inbox queue, NCP native-mode preamble runtime (NPS-RFC-0001) | Push to resident agents | Conformance with full L1 + L2 |
 | `nps-runner` | Skeleton + Generic-Host worker; documents the inbox-watch contract | Inbox poller wired through `npsd` | Spawn lifecycle, isolation | L3 conformance |
-| `nps-gateway` | Skeleton + HTTP listener on `0.0.0.0:443` (TLS off); documents NeuronHub integration points | Anchor Node middleware (NPS-CR-0001 wiring) | Reputation lookup (NPS-RFC-0004) | DDoS, NPT debit |
+| `nps-gateway` | Skeleton + HTTP listener on `0.0.0.0:443` (TLS off); documents NeuronHub integration points | Anchor Node middleware (NPS-CR-0001 wiring) | Reputation lookup (NPS-RFC-0004) | DDoS, CGN debit |
 | `nps-registry` | Skeleton + HTTP listener; placeholder `Resolve`/`Graph` endpoints returning `NDP-REGISTRY-UNAVAILABLE` | **Real SQLite-backed registry**: Announce / Resolve / Graph all live; TTL lazy expiry; monotonic graph seq; file or in-memory via env | HA cluster mode | Federation |
 | `nps-cloud-ca` | Skeleton; defers to `tools/nip-ca-server*` (six per-language OSS CAs) for actual issuance | NPS-RFC-0002 X.509 + ACME wiring (skeleton; full issuance in nip-ca-server) | HSM integration | Cross-CA trust |
 | `nps-ledger` | Skeleton + in-memory log honouring the NPS-RFC-0004 Phase 1 entry shape | **Phase 2**: SQLite persistence, RFC 9162 Merkle tree, operator-signed STH, `/v1/log/proof` inclusion proof endpoint | STH gossip, public mirror | Public log accreditation |
