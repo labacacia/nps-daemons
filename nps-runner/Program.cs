@@ -1,50 +1,35 @@
 // Copyright 2026 INNO LOTUS PTY LTD
 // SPDX-License-Identifier: Apache-2.0
 //
-// nps-runner — NPS Daemon, Layer 1 (host-local task scheduler / FaaS runtime).
-// See docs/daemons/architecture.md for the role this binary plays.
+// nps-runner — NPS task scheduler / FaaS runtime.
 //
-// Phase 1 (v1.0-alpha.3): Generic Host scaffolding only. The inbox-watch
-// + spawn-spec resolver lands at L3 stage (alpha.5+) per the daemon
-// architecture phasing table.
+// Startup sequence:
+//   1. Read RunnerOptions from environment variables.
+//   2. Self-register with local npsd (POST /v1/agents, idempotent).
+//   3. Long-poll the runner's inbox for JSON spawn-spec messages.
+//   4. For each message: spawn a subprocess, capture stdout/stderr to a log
+//      file, enforce idle + max-runtime limits, ack the inbox message on exit,
+//      and optionally POST a completion notification to the caller's reply_to NID.
+//
+// Configuration (all via environment variables — see RunnerOptions):
+//   NPSD_URL                           default: http://127.0.0.1:17433
+//   NPS_RUNNER_POLL_INTERVAL_MS        default: 1000
+//   NPS_RUNNER_MAX_CONCURRENT_WORKERS  default: 8
+//   NPS_RUNNER_LOG_DIR                 default: /tmp/nps-runner-logs
+//   NPS_RUNNER_AGENT_ID                default: nps-runner
 
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
+using NPS.Daemon.Runner;
+
+var opts = RunnerOptions.FromEnvironment();
 
 var builder = Host.CreateApplicationBuilder(args);
-builder.Services.AddHostedService<RunnerHeartbeat>();
+builder.Services
+    .AddSingleton(opts)
+    .AddSingleton(_ => new HttpClient { Timeout = TimeSpan.FromSeconds(60) })
+    .AddSingleton<NpsdClient>()
+    .AddSingleton<WorkerManager>()
+    .AddHostedService<InboxWatcher>();
 
 await builder.Build().RunAsync();
-
-/// <summary>
-/// Phase 1 placeholder: prints a heartbeat every 30 s confirming the
-/// daemon is alive. Replaced with the inbox watcher in alpha.5.
-/// </summary>
-internal sealed class RunnerHeartbeat : BackgroundService
-{
-    private readonly ILogger<RunnerHeartbeat> _log;
-    public RunnerHeartbeat(ILogger<RunnerHeartbeat> log) => _log = log;
-
-    protected override async Task ExecuteAsync(CancellationToken ct)
-    {
-        _log.LogInformation(
-            "nps-runner v1.0.0-alpha.3 starting (Phase 1 skeleton — inbox watcher + spawn-spec resolver land at alpha.5; see docs/daemons/architecture.md)");
-
-        var period = TimeSpan.FromSeconds(30);
-        while (!ct.IsCancellationRequested)
-        {
-            _log.LogInformation("nps-runner heartbeat — Phase 1 skeleton, no work to do yet");
-            try
-            {
-                await Task.Delay(period, ct);
-            }
-            catch (OperationCanceledException)
-            {
-                break;
-            }
-        }
-
-        _log.LogInformation("nps-runner shutting down");
-    }
-}
