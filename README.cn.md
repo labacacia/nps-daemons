@@ -69,8 +69,8 @@ docker compose up -d npsd
 
 ```bash
 cd npsd
-docker build -t labacacia/npsd:1.0.0-alpha.5.2 .
-docker run --rm -p 17433:17433 -v npsd-data:/data labacacia/npsd:1.0.0-alpha.5.2
+docker build -t labacacia/npsd:1.0.0-alpha.5 .
+docker run --rm -p 17433:17433 -v npsd-data:/data labacacia/npsd:1.0.0-alpha.5
 ```
 
 源码构建也行（需要 .NET 10 SDK）：
@@ -90,14 +90,14 @@ dotnet run
 无需 .NET 运行时，开箱即用。Linux 安装包注册 systemd 服务；Windows MSI 通过
 `NT SERVICE\<daemon>` 虚拟账户注册 Windows 服务。
 
-版本号 `1.0.0-alpha.5.2` 替换为当前发布版本即可。
+版本号 `1.0.0-alpha.5` 替换为当前发布版本即可。
 
 ### Ubuntu / Debian（amd64）
 
 ```bash
-VER=1.0~alpha.5.2   # Debian 版本格式（用 ~ 分隔预发布）
+VER=1.0~alpha.5   # Debian 版本格式（用 ~ 分隔预发布）
 for pkg in npsd nps-runner nps-gateway nps-registry; do
-    curl -LO "https://github.com/labacacia/nps-daemons/releases/download/v1.0.0-alpha.5.2/${pkg}_${VER}_amd64.deb"
+    curl -LO "https://github.com/labacacia/nps-daemons/releases/download/v1.0.0-alpha.5/${pkg}_${VER}_amd64.deb"
     sudo dpkg -i "${pkg}_${VER}_amd64.deb"
 done
 ```
@@ -109,9 +109,9 @@ done
 ### Fedora / RHEL（x86_64）
 
 ```bash
-VER=1.0.0-alpha.5.2
+VER=1.0.0-alpha.5
 RPM_VER=1.0.0
-RPM_REL=0.alpha.5.2.1
+RPM_REL=0.alpha.5.1
 for pkg in npsd nps-runner nps-gateway nps-registry; do
     curl -LO "https://github.com/labacacia/nps-daemons/releases/download/v${VER}/${pkg}-${RPM_VER}-${RPM_REL}.x86_64.rpm"
     sudo rpm -i "${pkg}-${RPM_VER}-${RPM_REL}.x86_64.rpm"
@@ -125,7 +125,7 @@ done
 ### Windows（x64，MSI）
 
 ```powershell
-$ver = "1.0.0-alpha.5.2"
+$ver = "1.0.0-alpha.5"
 foreach ($pkg in @("npsd","nps-runner","nps-gateway","nps-registry")) {
     $file = "$pkg-$ver-win-x64.msi"
     Invoke-WebRequest -Uri "https://github.com/labacacia/nps-daemons/releases/download/v$ver/$file" -OutFile $file

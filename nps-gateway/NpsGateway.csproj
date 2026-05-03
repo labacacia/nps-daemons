@@ -7,7 +7,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <AssemblyName>nps-gateway</AssemblyName>
     <RootNamespace>NPS.Daemon.Gateway</RootNamespace>
-    <Version>1.0.0-alpha.5.2</Version>
+    <Version>1.0.0-alpha.5</Version>
     <Description>NPS Daemon — Layer 2 Internet ingress (nps-gateway). Public-facing translator from NPS-over-TLS to local frames. Handles TLS termination, rate limit, NeuronHub-customer auth, CGN debit triggering, reputation checks, DDoS defense.</Description>
     <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
   </PropertyGroup>

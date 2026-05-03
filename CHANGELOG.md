@@ -8,7 +8,7 @@ Until NPS reaches v1.0 stable, every repository in the suite is synchronized to 
 
 ---
 
-## [Unreleased]
+## [1.0.0-alpha.5] — 2026-05-03
 
 ### Added
 
@@ -19,21 +19,6 @@ Until NPS reaches v1.0 stable, every repository in the suite is synchronized to 
   Windows service under a `NT SERVICE\<daemon>` virtual account. Install instructions:
   see the [NPS Wiki — Operator Quickstart Bundle](https://github.com/labacacia/NPS-Release/wiki/Operator-Quickstart-Bundle#option-b-native-packages-systemd--windows-service).
 
----
-
-## [1.0.0-alpha.5.2] — 2026-05-03
-
-### Tracking the suite
-
-Tracks NPS suite `v1.0.0-alpha.5.2`. All four daemons rebuilt and published.
-No daemon-level code changes — this release carries only the
-`estimated_npt → cgn_est` wire field rename (NPS-Dev#17). Upgrade all
-suite components together.
-
----
-
-## [1.0.0-alpha.5] — 2026-05-01
-
 ### Changed
 
 - **`npsd`** — `AnchorNodeMiddleware` gains `topology:read` capability
@@ -41,7 +26,7 @@ suite components together.
   `NWP-RESERVED-TYPE-UNSUPPORTED` for unknown reserved NWP frame types.
   See [`npsd/CHANGELOG.md`](./npsd/CHANGELOG.md) for details.
 - **`nps-gateway`** — bumps `LabAcacia.NPS.NWP.Anchor` to
-  `1.0.0-alpha.5.2` (wire field rename `estimated_npt` → `cgn_est`).
+  `1.0.0-alpha.5.2` (wire field rename `estimated_npt → cgn_est`).
 - **`nps-runner`** — inbox watcher + worker spawn fully implemented (L3
   FaaS runtime); replaces the alpha.3/alpha.4 heartbeat skeleton.
   See [`nps-runner/CHANGELOG.md`](./nps-runner/CHANGELOG.md) for details.
@@ -171,7 +156,6 @@ for the full suite-level rollup.
 
 ---
 
-[1.0.0-alpha.5.2]: https://github.com/labacacia/nps-daemons/releases/tag/v1.0.0-alpha.5.2
 [1.0.0-alpha.5]: https://github.com/labacacia/nps-daemons/releases/tag/v1.0.0-alpha.5
 [1.0.0-alpha.4]: https://github.com/labacacia/nps-daemons/releases/tag/v1.0.0-alpha.4
 [1.0.0-alpha.3]: https://github.com/labacacia/nps-daemons/releases/tag/v1.0.0-alpha.3

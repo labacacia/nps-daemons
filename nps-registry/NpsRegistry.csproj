@@ -7,7 +7,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <AssemblyName>nps-registry</AssemblyName>
     <RootNamespace>NPS.Daemon.Registry</RootNamespace>
-    <Version>1.0.0-alpha.5.2</Version>
+    <Version>1.0.0-alpha.5</Version>
     <Description>NPS Daemon — Layer 2 cross-machine NDP discovery registry (nps-registry). Centralised discovery service responding to Resolve / Graph queries, aggregating registrations from multiple machines.</Description>
     <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
   </PropertyGroup>
