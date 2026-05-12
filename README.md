@@ -22,7 +22,7 @@ layers of the standard NPS deployment topology.
 | Layer | Daemon | Default port | Status at `v1.0.0-alpha.6` |
 |-------|--------|--------------|----------------------------|
 | 1 | [`npsd`](./npsd/) | `127.0.0.1:17433` | L1 minimum: HTTP listener, root keypair generation (POSIX `0600`), `/.nwm`, `/health`. |
-| 1 | [`nps-runner`](./nps-runner/) | — (worker) | Phase 1 skeleton — Generic Host scaffolding + 30 s heartbeat. Inbox watcher + spawn-spec resolver land alpha.5+. |
+| 1 | [`nps-runner`](./nps-runner/) | — (worker) | Phase 1 skeleton — Generic Host scaffolding + 30 s heartbeat. Inbox watcher + spawn-spec resolver land alpha.6+. |
 | 2 | [`nps-gateway`](./nps-gateway/) | `:8080` | Phase 1 skeleton — public HTTP listener + `/health`. TLS termination + rate limit + auth + CGN debit + reputation lookup land alpha.4 → alpha.5. |
 | 2 | [`nps-registry`](./nps-registry/) | `:17436` | Phase 1 skeleton — NDP `Resolve` / `Graph` / `Announce` URLs return `NDP-REGISTRY-UNAVAILABLE` so consumers can wire and gracefully fall back. SQLite-backed real registry lands alpha.4. |
 
@@ -109,7 +109,7 @@ done
 Or install only the daemons you need, e.g.:
 
 ```bash
-VER=1.0.0~alpha.5   # Debian version format (~ replaces -)
+VER=1.0.0~alpha.6   # Debian version format (~ replaces -)
 curl -LO "https://github.com/labacacia/nps-daemons/releases/download/v1.0.0-alpha.6/npsd_${VER}_amd64.deb"
 sudo dpkg -i "npsd_${VER}_amd64.deb"
 sudo systemctl status npsd

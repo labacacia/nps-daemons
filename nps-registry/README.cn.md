@@ -5,7 +5,7 @@
 > 跨机 NDP 发现注册中心的参考实现。中心节点，响应 NDP `Resolve` / `Graph`
 > 查询，汇总多机注册信息。每机 [`npsd`](../npsd/) 只知道本机 session；
 > 跨机查询走这里。完整六-daemon 拓扑见
-> [`docs/daemons/architecture.cn.md`](../../../docs/daemons/architecture.cn.md)。
+> [`docs/daemons/architecture.cn.md`](https://github.com/labacacia/nps-daemons/blob/main/docs/architecture.cn.md)。
 
 ## 状态 —— alpha.4
 
@@ -13,7 +13,7 @@
 公告以 TTL lazy expiry 方式持久化（无需后台定时器），每次 Announce 或
 eviction 均自增单调 per-cluster graph 序号。文件存储或内存存储通过 env 选择。
 
-L2 跨机 federation（HA cluster 模式 / gossip）排队到 alpha.5+。
+L2 跨机 federation（HA cluster 模式 / gossip）排队到 alpha.6+。
 
 ## 端点
 
@@ -53,14 +53,14 @@ docker run --rm -p 17436:17436 \
 
 | 变量 | 默认值 | 用途 |
 |-----|------|-----|
-| `NPSREGISTRY_PORT` | `17436` | bind TCP 端口。NDP 可选独立端口，见 [NPS-4](../../../spec/NPS-4-NDP.cn.md)。|
+| `NPSREGISTRY_PORT` | `17436` | bind TCP 端口。NDP 可选独立端口，见 [NPS-4](https://github.com/labacacia/NPS-Release/blob/main/spec/NPS-4-NDP.cn.md)。|
 | `NPSREGISTRY_HOST` | `0.0.0.0` | bind 地址。registry 故意面向网络。|
 | `NPSREGISTRY_SQLITE_PATH` | *(内存)* | SQLite 数据库文件路径。未设置 → 临时内存存储。|
 
 ## 规范引用
 
-- [NPS-4 NDP](../../../spec/NPS-4-NDP.cn.md) —— 本 daemon 实现的注册中心面所属的发现协议。
-- [Daemon 架构 §④](../../../docs/daemons/architecture.cn.md#-nps-registry--discovery-注册中心-l2-阶段可选托管) —— 为什么 registry 独立 daemon 而不是 `npsd` 的一部分。
+- [NPS-4 NDP](https://github.com/labacacia/NPS-Release/blob/main/spec/NPS-4-NDP.cn.md) —— 本 daemon 实现的注册中心面所属的发现协议。
+- [Daemon 架构 §④](https://github.com/labacacia/nps-daemons/blob/main/docs/architecture.cn.md#-nps-registry--discovery-注册中心-l2-阶段可选托管) —— 为什么 registry 独立 daemon 而不是 `npsd` 的一部分。
 
 ## 许可证
 
