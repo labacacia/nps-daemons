@@ -8,6 +8,15 @@ Until NPS reaches v1.0 stable, every repository in the suite is synchronized to 
 
 ---
 
+## [1.0.0-alpha.6] — 2026-05-12
+
+### Changed
+
+- Aligns all daemon image tags, project versions, publish-overlay versions,
+  and `LabAcacia.NPS.*` PackageReferences to `1.0.0-alpha.6`.
+
+---
+
 ## [1.0.0-alpha.5] — 2026-05-03
 
 ### Added
@@ -26,7 +35,7 @@ Until NPS reaches v1.0 stable, every repository in the suite is synchronized to 
   `NWP-RESERVED-TYPE-UNSUPPORTED` for unknown reserved NWP frame types.
   See [`npsd/CHANGELOG.md`](./npsd/CHANGELOG.md) for details.
 - **`nps-gateway`** — bumps `LabAcacia.NPS.NWP.Anchor` to
-  `1.0.0-alpha.5.2` (wire field rename `estimated_npt → cgn_est`).
+  `1.0.0-alpha.5` (wire field rename `estimated_npt → cgn_est`).
 - **`nps-runner`** — inbox watcher + worker spawn fully implemented (L3
   FaaS runtime); replaces the alpha.3/alpha.4 heartbeat skeleton.
   See [`nps-runner/CHANGELOG.md`](./nps-runner/CHANGELOG.md) for details.

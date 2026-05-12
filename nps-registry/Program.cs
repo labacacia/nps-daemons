@@ -4,8 +4,8 @@
 // nps-registry — NPS Daemon, Layer 2 (cross-machine NDP discovery).
 // See docs/daemons/architecture.md for the role this binary plays.
 //
-// v1.0.0-alpha.4: SQLite-backed NDP registry with real Announce / Resolve / Graph.
-// L2 federation lands in alpha.5+.
+// Current reference daemon: SQLite-backed NDP registry with real Announce / Resolve / Graph.
+// L2 federation lands in a later alpha.
 
 using System.Text.Json;
 using NPS.Daemon.Registry;
@@ -57,7 +57,7 @@ app.MapGet("/health", (INdpRegistry reg) =>
     {
         status    = "ok",
         daemon    = "nps-registry",
-        version   = "1.0.0-alpha.4",
+        version   = "1.0.0-alpha.6",
         layer     = 2,
         role      = "cross-machine NDP discovery",
         phase     = 2,
@@ -160,7 +160,7 @@ app.MapGet("/v1/graph", (SqliteNdpRegistry reg) =>
 });
 
 app.Logger.LogInformation(
-    "nps-registry v1.0.0-alpha.4 starting on port 17436 (SQLite registry; storage={Storage}; see docs/daemons/architecture.md)",
+    "nps-registry v1.0.0-alpha.6 starting on port 17436 (SQLite registry; storage={Storage}; see docs/daemons/architecture.md)",
     string.IsNullOrEmpty(sqlitePath) ? "in-memory" : sqlitePath);
 
 app.Run();

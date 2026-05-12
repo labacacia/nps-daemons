@@ -55,10 +55,10 @@ English | [中文版](./architecture.cn.md)
 #### ① `npsd` — Protocol ingress + state host
 
 - **Listens on** `127.0.0.1:17433` by default (unified port for the entire NPS suite).
-- **Handles** NCP handshake (including the [NPS-RFC-0001](https://github.com/labacacia/NPS-Release/blob/main/spec/rfcs/NPS-RFC-0001-ncp-connection-preamble.md) connection preamble), frame encode/decode, AnnounceFrame emission, root Ed25519 keypair management, sub-NID issuance for local agents, the per-host session registry, and the per-NID inbox queue used for `ephemeral` activation_mode delivery.
+- **Handles** NCP handshake (including the [NPS-RFC-0001](../../spec/rfcs/NPS-RFC-0001-ncp-connection-preamble.md) connection preamble), frame encode/decode, AnnounceFrame emission, root Ed25519 keypair management, sub-NID issuance for local agents, the per-host session registry, and the per-NID inbox queue used for `ephemeral` activation_mode delivery.
 - **Why always-on**: identity and inbox cannot follow a session — persistent state needs a host. Every NPS client on the machine (MCP shim, resident agent, worker, gateway) connects through this daemon.
 - **Why not merged into anything else**: protocol layer is business-agnostic and shared by all upper layers; folding it into a business process pollutes the trust domain.
-- **Reference compliance**: target is `NPS-Node Profile L1` (see [`spec/services/NPS-Node-Profile.md`](https://github.com/labacacia/NPS-Release/blob/main/spec/services/NPS-Node-Profile.md) and the L1 conformance suite at [`spec/services/conformance/NPS-Node-L1.md`](https://github.com/labacacia/NPS-Release/blob/main/spec/services/conformance/NPS-Node-L1.md)).
+- **Reference compliance**: target is `NPS-Node Profile L1` (see [`spec/services/NPS-Node-Profile.md`](../../spec/services/NPS-Node-Profile.md) and the L1 conformance suite at [`spec/services/conformance/NPS-Node-L1.md`](../../spec/services/conformance/NPS-Node-L1.md)).
 
 #### ② `nps-runner` — Task scheduler / FaaS runtime *(L3 stage)*
 
@@ -70,10 +70,10 @@ English | [中文版](./architecture.cn.md)
 
 #### ③ `nps-gateway` — Internet ingress
 
-- **Translates** Internet-side NPS-over-TLS traffic into local frames. Performs TLS termination, rate limiting, NeuronHub-customer authentication, CGN debit triggering, reputation checks (against [NPS-RFC-0004](https://github.com/labacacia/NPS-Release/blob/main/spec/rfcs/NPS-RFC-0004-nid-reputation-log.md)), DDoS defense.
+- **Translates** Internet-side NPS-over-TLS traffic into local frames. Performs TLS termination, rate limiting, NeuronHub-customer authentication, CGN debit triggering, reputation checks (against [NPS-RFC-0004](../../spec/rfcs/NPS-RFC-0004-nid-reputation-log.md)), DDoS defense.
 - **Why always-on**: the publicly bound port must always be listening.
 - **Why separated from `npsd`**: `npsd` is bound to loopback by default; the gateway binds public addresses. Attack surface, security posture, and operational scope differ. `npsd` failure affects all local NPS traffic; gateway failure only affects external inbound — the two MUST be independently restartable.
-- **Note**: This is a **process-level** name; the *spec*-level role of cluster control plane is now called **Anchor Node** in NWP, see [NPS-CR-0001](https://github.com/labacacia/NPS-Release/blob/main/spec/cr/NPS-CR-0001-anchor-bridge-split.md). The `nps-gateway` process MAY host an Anchor Node middleware but is not constrained to.
+- **Note**: This is a **process-level** name; the *spec*-level role of cluster control plane is now called **Anchor Node** in NWP, see [NPS-CR-0001](../../spec/cr/NPS-CR-0001-anchor-bridge-split.md). The `nps-gateway` process MAY host an Anchor Node middleware but is not constrained to.
 
 #### ④ `nps-registry` — Discovery registry *(L2 stage, optionally hosted)*
 
@@ -92,7 +92,7 @@ English | [中文版](./architecture.cn.md)
 
 #### ⑥ `nps-ledger` — Audit / compliance log collector
 
-- **Append-only collection point** for the K-of-N audit consensus that NeuronHub CGN settlement ultimately depends on. Implements the Certificate-Transparency-style log defined by [NPS-RFC-0004](https://github.com/labacacia/NPS-Release/blob/main/spec/rfcs/NPS-RFC-0004-nid-reputation-log.md): submission, query, signed tree head, inclusion proofs.
+- **Append-only collection point** for the K-of-N audit consensus that NeuronHub CGN settlement ultimately depends on. Implements the Certificate-Transparency-style log defined by [NPS-RFC-0004](../../spec/rfcs/NPS-RFC-0004-nid-reputation-log.md): submission, query, signed tree head, inclusion proofs.
 - **Why always-on**: audit logs are a continuous append stream; the receiver cannot be down or there will be gaps.
 - **Why independent**: audit isolation requirements are the strongest of all six daemons — `nps-ledger` MUST NOT trust the processes it audits, so it must run in its own trust domain. Even if `npsd` is compromised, `nps-ledger` should still produce independent evidence.
 

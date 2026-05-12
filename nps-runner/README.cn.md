@@ -5,7 +5,7 @@
 > 监控本机 [`npsd`](../npsd/) inbox 中的 JSON spawn-spec 消息，按需拉起
 > worker 子进程，并管理其完整生命周期（stdout/stderr 捕获、空闲/最大运行
 > 超时、并发上限、完成通知）。完整六-daemon 拓扑见
-> [`docs/daemons/architecture.cn.md`](../docs/architecture.cn.md)。
+> [`docs/daemons/architecture.cn.md`](../../../docs/daemons/architecture.cn.md)。
 
 ## 状态 —— alpha.5
 
@@ -22,11 +22,11 @@ dotnet run --project tools/daemons/nps-runner/NpsRunner.csproj
 ### Docker
 
 ```bash
-docker build -f tools/daemons/nps-runner/Dockerfile -t labacacia/nps-runner:1.0.0-alpha.5 .
+docker build -f tools/daemons/nps-runner/Dockerfile -t labacacia/nps-runner:1.0.0-alpha.6 .
 docker run --rm \
   -e NPSD_URL=http://127.0.0.1:17433 \
   -e NPS_RUNNER_LOG_DIR=/var/log/nps-runner \
-  labacacia/nps-runner:1.0.0-alpha.5
+  labacacia/nps-runner:1.0.0-alpha.6
 ```
 
 ## 配置
@@ -118,7 +118,7 @@ worker 退出且设置了 `reply_to` 时，nps-runner 投递：
 
 ## 为什么独立 daemon（而不是 `npsd` 的一部分）
 
-详见 [架构 §1](../docs/architecture.cn.md)：协议层与 worker
+详见 [架构 §1](../../../docs/daemons/architecture.cn.md)：协议层与 worker
 调度器在资源画像、故障隔离、信任边界三方面差异巨大 —— worker crash 不该
 把 NCP 层带下去；调度器要执行用户提供的命令，协议层不该有这个权限面。
 

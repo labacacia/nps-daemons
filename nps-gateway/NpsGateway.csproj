@@ -7,16 +7,16 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <AssemblyName>nps-gateway</AssemblyName>
     <RootNamespace>NPS.Daemon.Gateway</RootNamespace>
-    <Version>1.0.0-alpha.5</Version>
+    <Version>1.0.0-alpha.6</Version>
     <Description>NPS Daemon — Layer 2 Internet ingress (nps-gateway). Public-facing translator from NPS-over-TLS to local frames. Handles TLS termination, rate limit, NeuronHub-customer auth, CGN debit triggering, reputation checks, DDoS defense.</Description>
     <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="LabAcacia.NPS.Core"        Version="1.0.0-alpha.5" />
-    <PackageReference Include="LabAcacia.NPS.NWP"         Version="1.0.0-alpha.5.1" />
-    <PackageReference Include="LabAcacia.NPS.NWP.Anchor"  Version="1.0.0-alpha.5.2" />
-    <PackageReference Include="LabAcacia.NPS.NIP"         Version="1.0.0-alpha.5.1" />
+    <PackageReference Include="LabAcacia.NPS.Core"        Version="1.0.0-alpha.6" />
+    <PackageReference Include="LabAcacia.NPS.NWP"         Version="1.0.0-alpha.6" />
+    <PackageReference Include="LabAcacia.NPS.NWP.Anchor"  Version="1.0.0-alpha.6" />
+    <PackageReference Include="LabAcacia.NPS.NIP"         Version="1.0.0-alpha.6" />
   </ItemGroup>
 
 </Project>

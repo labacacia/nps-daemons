@@ -8,6 +8,15 @@
 
 ---
 
+## [1.0.0-alpha.6] —— 2026-05-12
+
+### 变更
+
+- 所有 daemon 镜像标签、项目版本、publish-overlay 版本以及
+  `LabAcacia.NPS.*` PackageReference 统一对齐到 `1.0.0-alpha.6`。
+
+---
+
 ## [1.0.0-alpha.5] —— 2026-05-03
 
 ### 新增
@@ -25,7 +34,7 @@
   `NWP-RESERVED-TYPE-UNSUPPORTED`。详见
   [`npsd/CHANGELOG.cn.md`](./npsd/CHANGELOG.cn.md)。
 - **`nps-gateway`** —— `LabAcacia.NPS.NWP.Anchor` 升至
-  `1.0.0-alpha.5.2`（wire 字段 `estimated_npt → cgn_est` 重命名）。
+  `1.0.0-alpha.5`（wire 字段 `estimated_npt → cgn_est` 重命名）。
 - **`nps-runner`** —— inbox watcher + worker spawn 完整实现（L3 FaaS
   runtime），替换 alpha.3/alpha.4 心跳骨架。详见
   [`nps-runner/CHANGELOG.cn.md`](./nps-runner/CHANGELOG.cn.md)。

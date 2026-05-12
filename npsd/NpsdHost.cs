@@ -4,7 +4,13 @@
 using System.Text.Json;
 using NPS.Daemon.Npsd.Endpoints;
 using NPS.Daemon.Npsd.Inbox;
+using NPS.Daemon.Npsd.Observability;
 using NPS.Daemon.Npsd.SubNids;
+using NPS.Daemon.Observability;
+using NPS.Daemon.Observability.HealthChecks;
+using NPS.Daemon.Observability.Logging;
+using NPS.Daemon.Observability.Metrics;
+using NPS.Daemon.Observability.Shutdown;
 
 namespace NPS.Daemon.Npsd;
 
@@ -31,6 +37,8 @@ public static class NpsdHost
         opts ??= NpsdOptions.FromEnvironment();
 
         var builder = WebApplication.CreateBuilder(args);
+
+        builder.Logging.AddNpsJsonConsole();
 
         builder.WebHost.ConfigureKestrel(options =>
         {
@@ -66,6 +74,22 @@ public static class NpsdHost
         });
         services.AddSingleton<SubNidService>();
         services.AddSingleton<InboxStore>();
+
+        // ── Observability baseline (NPS-Dev #45) ─────────────────────────────
+        services.AddNpsObservability();
+        services.AddSingleton<NpsdMetrics>();
+        services.AddReadinessProbe("storage", (sp, _) =>
+        {
+            var store = sp.GetRequiredService<SubNidStore>();
+            try { store.Ping(); return Task.FromResult<string?>(null); }
+            catch (Exception ex) { return Task.FromResult<string?>($"sqlite unavailable: {ex.Message}"); }
+        });
+        services.AddReadinessProbe("key_material", (sp, _) =>
+        {
+            var root = sp.GetService<RootIdentity>();
+            return Task.FromResult<string?>(
+                root is null ? "root identity not loaded" : null);
+        });
     }
 
     /// <summary>
@@ -79,24 +103,43 @@ public static class NpsdHost
             "npsd starting; root NID host fingerprint = {Fingerprint}; bind = {Host}:{Port}",
             rootKey.HostFingerprint, opts.Host, opts.Port);
 
-        // ── /health ───────────────────────────────────────────────────────────
-        app.MapGet("/health", (RootIdentity key, SubNidService nids, InboxStore inbox) => Results.Json(new
+        // Hook SIGTERM → flip liveness gate so /healthz starts failing.
+        app.UseShutdownLivenessGate();
+
+        // Per-request connection + frame counters (must run before route mapping
+        // so it observes every request, including health probes).
+        app.UseMiddleware<NpsdMetricsMiddleware>();
+
+        // ── /healthz, /readyz, /metrics ──────────────────────────────────────
+        app.MapNpsObservability();
+
+        // ── /health (legacy npsd-shaped JSON; kept for compatibility) ────────
+        app.MapGet("/health", (RootIdentity key, SubNidService nids, InboxStore inbox, ShutdownState shutdown) =>
         {
-            status         = "ok",
-            daemon         = "npsd",
-            version        = "1.0.0-alpha.3",
-            layer          = 1,
-            role           = "host-local NCP wire + state host",
-            port           = opts.Port,
-            host_nid       = nids.HostNid,
-            host_nid_fpr   = key.HostFingerprint,
-            spec_reference = "docs/daemons/architecture.md",
-            sub_nids = new
+            if (shutdown.IsStopping)
+                return Results.Json(new
+                {
+                    status = "stopping",
+                    daemon = "npsd",
+                }, s_jsonOpts, statusCode: 503);
+            return Results.Json(new
             {
-                count = nids.List(limit: 1, offset: 0) is var probe && probe.Count > 0
-                    ? "≥1" : "0",
-            },
-        }, s_jsonOpts));
+                status         = "ok",
+                daemon         = "npsd",
+                version        = "1.0.0-alpha.3",
+                layer          = 1,
+                role           = "host-local NCP wire + state host",
+                port           = opts.Port,
+                host_nid       = nids.HostNid,
+                host_nid_fpr   = key.HostFingerprint,
+                spec_reference = "docs/daemons/architecture.md",
+                sub_nids = new
+                {
+                    count = nids.List(limit: 1, offset: 0) is var probe && probe.Count > 0
+                        ? "≥1" : "0",
+                },
+            }, s_jsonOpts);
+        });
 
         // ── /.nwm — minimal Neural Web Manifest for the daemon itself ─────────
         app.MapGet("/.nwm", (RootIdentity key, SubNidService nids) => Results.Content(
@@ -120,6 +163,9 @@ public static class NpsdHost
                 {
                     manifest             = "/.nwm",
                     health               = "/health",
+                    healthz              = "/healthz",
+                    readyz               = "/readyz",
+                    metrics              = "/metrics",
                     sub_nid_issue        = "/v1/agents",
                     sub_nid_list         = "/v1/agents",
                     sub_nid_get          = "/v1/agents/{nid}",

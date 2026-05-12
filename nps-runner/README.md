@@ -6,7 +6,7 @@ English | [中文版](./README.cn.md)
 > spawns worker subprocesses on demand, and manages their full lifecycle
 > (stdout/stderr capture, idle + max-runtime timeouts, concurrency cap,
 > completion notifications).  See
-> [`docs/daemons/architecture.md`](../docs/architecture.md)
+> [`docs/daemons/architecture.md`](../../../docs/daemons/architecture.md)
 > for the broader six-daemon topology.
 
 ## Status — alpha.5
@@ -24,11 +24,11 @@ dotnet run --project tools/daemons/nps-runner/NpsRunner.csproj
 ### Docker
 
 ```bash
-docker build -f tools/daemons/nps-runner/Dockerfile -t labacacia/nps-runner:1.0.0-alpha.5 .
+docker build -f tools/daemons/nps-runner/Dockerfile -t labacacia/nps-runner:1.0.0-alpha.6 .
 docker run --rm \
   -e NPSD_URL=http://127.0.0.1:17433 \
   -e NPS_RUNNER_LOG_DIR=/var/log/nps-runner \
-  labacacia/nps-runner:1.0.0-alpha.5
+  labacacia/nps-runner:1.0.0-alpha.6
 ```
 
 ## Configuration
@@ -121,7 +121,7 @@ When a worker exits and `reply_to` is set, nps-runner deposits:
 
 ## Why a separate daemon (and not part of `npsd`)
 
-See [architecture §1](../docs/architecture.md): resource profile,
+See [architecture §1](../../../docs/daemons/architecture.md): resource profile,
 failure isolation, and trust boundary all differ significantly between the
 protocol layer and the worker scheduler — a worker crash must not take the NCP
 layer down, and the scheduler runs user-supplied commands that the protocol layer

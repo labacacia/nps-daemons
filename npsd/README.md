@@ -6,7 +6,7 @@ English | [中文版](./README.cn.md)
 > unified suite port `17433`, holds the host's root Ed25519 keypair,
 > issues sub-NIDs for local agents on demand, and exposes a per-NID
 > inbox queue for resident agent push delivery. See
-> [`docs/daemons/architecture.md`](../docs/architecture.md)
+> [`docs/daemons/architecture.md`](../../../docs/daemons/architecture.md)
 > for the broader six-daemon topology.
 
 ## What this binary does
@@ -97,11 +97,11 @@ All endpoints return JSON unless noted. Errors carry `{error, status, message}` 
 
 ## Spec references
 
-- [NPS-Node Profile](https://github.com/labacacia/NPS-Release/blob/main/spec/services/NPS-Node-Profile.md) — the compliance specification this daemon targets.
-- [NPS-Node-L1 conformance suite](https://github.com/labacacia/NPS-Release/blob/main/spec/services/conformance/NPS-Node-L1.md) — the 21 `TC-N1-*` cases this daemon is being built to pass.
-- [Daemon architecture](../docs/architecture.md) — the six-daemon, three-layer reference deployment.
-- [NPS-1 NCP](https://github.com/labacacia/NPS-Release/blob/main/spec/NPS-1-NCP.md) — the wire layer.
-- [NPS-3 NIP](https://github.com/labacacia/NPS-Release/blob/main/spec/NPS-3-NIP.md) — root keypair / IdentFrame semantics.
+- [NPS-Node Profile](../../../spec/services/NPS-Node-Profile.md) — the compliance specification this daemon targets.
+- [NPS-Node-L1 conformance suite](../../../spec/services/conformance/NPS-Node-L1.md) — the 21 `TC-N1-*` cases this daemon is being built to pass.
+- [Daemon architecture](../../../docs/daemons/architecture.md) — the six-daemon, three-layer reference deployment.
+- [NPS-1 NCP](../../../spec/NPS-1-NCP.md) — the wire layer.
+- [NPS-3 NIP](../../../spec/NPS-3-NIP.md) — root keypair / IdentFrame semantics.
 
 ## License
 

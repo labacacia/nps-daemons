@@ -101,6 +101,18 @@ public sealed class SubNidStore : IDisposable
         return conn;
     }
 
+    /// <summary>
+    /// Cheap connectivity check used by the daemon's <c>/readyz</c> probe.
+    /// Throws on failure; returns silently on success.
+    /// </summary>
+    public void Ping()
+    {
+        using var conn = OpenConnection();
+        using var cmd  = conn.CreateCommand();
+        cmd.CommandText = "SELECT 1;";
+        cmd.ExecuteScalar();
+    }
+
     /// <summary>Reserves and returns the next monotonic serial number (hex).</summary>
     public string NextSerial()
     {

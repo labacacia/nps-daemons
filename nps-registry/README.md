@@ -7,7 +7,7 @@ English | [中文版](./README.cn.md)
 > and aggregates registrations from multiple machines. Per-host
 > [`npsd`](../npsd/) only knows local sessions; cross-machine queries
 > go here. See
-> [`docs/daemons/architecture.md`](../docs/architecture.md)
+> [`docs/daemons/architecture.md`](../../../docs/daemons/architecture.md)
 > for the broader six-daemon topology.
 
 ## Status — alpha.4
@@ -59,14 +59,14 @@ docker run --rm -p 17436:17436 \
 
 | Variable | Default | Purpose |
 |----------|---------|---------|
-| `NPSREGISTRY_PORT` | `17436` | TCP port to bind. NDP optional-dedicated per [NPS-4](https://github.com/labacacia/NPS-Release/blob/main/spec/NPS-4-NDP.md). |
+| `NPSREGISTRY_PORT` | `17436` | TCP port to bind. NDP optional-dedicated per [NPS-4](../../../spec/NPS-4-NDP.md). |
 | `NPSREGISTRY_HOST` | `0.0.0.0` | Bind address. A registry is intentionally network-facing. |
 | `NPSREGISTRY_SQLITE_PATH` | *(in-memory)* | Path to the SQLite database file. Unset → ephemeral in-memory store. |
 
 ## Spec references
 
-- [NPS-4 NDP](https://github.com/labacacia/NPS-Release/blob/main/spec/NPS-4-NDP.md) — the discovery protocol whose registry surface this daemon implements.
-- [Daemon architecture §④](../docs/architecture.md#-nps-registry--discovery-registry-l2-stage-optionally-hosted) — why the registry is its own daemon rather than part of `npsd`.
+- [NPS-4 NDP](../../../spec/NPS-4-NDP.md) — the discovery protocol whose registry surface this daemon implements.
+- [Daemon architecture §④](../../../docs/daemons/architecture.md#-nps-registry--discovery-registry-l2-stage-optionally-hosted) — why the registry is its own daemon rather than part of `npsd`.
 
 ## License
 

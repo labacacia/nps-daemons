@@ -6,7 +6,7 @@
 > 持有主机的 root Ed25519 keypair，按需为本机 agent 签发 sub-NID，
 > 并提供 per-NID inbox 队列用于 resident agent 推送送达。
 > 完整六 daemon 拓扑见
-> [`docs/daemons/architecture.cn.md`](../docs/architecture.cn.md)。
+> [`docs/daemons/architecture.cn.md`](../../../docs/daemons/architecture.cn.md)。
 
 ## 这个二进制做什么
 
@@ -97,11 +97,11 @@ docker run --rm -p 17433:17433 \
 
 ## 规范参考
 
-- [NPS-Node Profile](https://gitee.com/labacacia/NPS-Release/blob/main/spec/services/NPS-Node-Profile.cn.md) —— 本 daemon 对照构建的合规规范。
-- [NPS-Node-L1 合规](https://gitee.com/labacacia/NPS-Release/blob/main/spec/services/conformance/NPS-Node-L1.cn.md) —— 21 个 `TC-N1-*` 用例。
-- [Daemon 架构](../docs/architecture.cn.md) —— 六 daemon、三层参考部署。
-- [NPS-1 NCP](https://gitee.com/labacacia/NPS-Release/blob/main/spec/NPS-1-NCP.cn.md) —— 线层。
-- [NPS-3 NIP](https://gitee.com/labacacia/NPS-Release/blob/main/spec/NPS-3-NIP.cn.md) —— root keypair / IdentFrame 语义。
+- [NPS-Node Profile](../../../spec/services/NPS-Node-Profile.cn.md) —— 本 daemon 对照构建的合规规范。
+- [NPS-Node-L1 合规](../../../spec/services/conformance/NPS-Node-L1.cn.md) —— 21 个 `TC-N1-*` 用例。
+- [Daemon 架构](../../../docs/daemons/architecture.cn.md) —— 六 daemon、三层参考部署。
+- [NPS-1 NCP](../../../spec/NPS-1-NCP.cn.md) —— 线层。
+- [NPS-3 NIP](../../../spec/NPS-3-NIP.cn.md) —— root keypair / IdentFrame 语义。
 
 ## License
 
