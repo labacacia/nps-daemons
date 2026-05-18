@@ -8,6 +8,15 @@
 
 ---
 
+## [1.0.0-alpha.7] —— 2026-05-18
+
+### 变更
+
+- 所有 daemon 镜像标签、项目版本、publish-overlay 版本以及
+  `LabAcacia.NPS.*` PackageReference 统一对齐到 `1.0.0-alpha.7`。
+
+---
+
 ## [1.0.0-alpha.6] —— 2026-05-12
 
 ### 变更
@@ -33,7 +42,7 @@
   和每事件 `cgn_est` 字段；未知保留 NWP 帧类型返回 HTTP 501 +
   `NWP-RESERVED-TYPE-UNSUPPORTED`。详见
   [`npsd/CHANGELOG.cn.md`](./npsd/CHANGELOG.cn.md)。
-- **`nps-gateway`** —— `LabAcacia.NPS.NWP.Anchor` 升至
+- **`nps-ingress`** —— `LabAcacia.NPS.NWP.Anchor` 升至
   `1.0.0-alpha.5`（wire 字段 `estimated_npt → cgn_est` 重命名）。
 - **`nps-runner`** —— inbox watcher + worker spawn 完整实现（L3 FaaS
   runtime），替换 alpha.3/alpha.4 心跳骨架。详见
@@ -82,9 +91,9 @@
 - **NPS-RFC-0002 Phase A/B** —— `LabAcacia.NPS.NIP` 中的 X.509 NID
   证书 + ACME `agent-01`（`nps-cloud-ca` 和 `nip-ca-server` 后续会消费）。
 - **NPS-CR-0002** —— Anchor Node 的 `topology.snapshot` /
-  `topology.stream`（`nps-gateway` 等 Anchor 中间件落地后接入）。
+  `topology.stream`（`nps-ingress` 等 Anchor 中间件落地后接入）。
 
-仍为 Phase 1 骨架（自 alpha.3 无功能变更）：`nps-runner`、`nps-gateway`。
+仍为 Phase 1 骨架（自 alpha.3 无功能变更）：`nps-runner`、`nps-ingress`。
 
 完整套件级汇总见
 [`NPS-Release/CHANGELOG.cn.md`](https://gitee.com/labacacia/NPS-Release/blob/main/CHANGELOG.cn.md)。
@@ -107,7 +116,7 @@
 - **`nps-runner`**（Layer 1，任务调度 / FaaS runtime）—— Phase 1
   骨架：Generic Host 脚手架 + 30 秒心跳。Inbox 监听 + `spawn_spec_ref`
   解析 + worker 生命周期在 L3 阶段（alpha.5+）。
-- **`nps-gateway`**（Layer 2，公网 Internet ingress）—— Phase 1 骨架：
+- **`nps-ingress`**（Layer 2，公网 Internet ingress）—— Phase 1 骨架：
   `:8080` HTTP 监听 + `/health`，文档化里程碑。TLS 卸载、rate-limit、
   NeuronHub 鉴权、CGN 计费、NPS-RFC-0004 reputation 查询、
   NPS-CR-0001 Anchor Node 中间件接线在 alpha.4 → alpha.5。
@@ -139,7 +148,7 @@
   `/.nwm` 的 `min_assurance_level` 字段）。
 - **RFC-0004** —— NID 声誉日志（Phase 1，仅 entry shape；in-memory
   实现在 `innolotus/nps-ledger` 而非本仓）。
-- **CR-0001** —— Anchor / Bridge Node 拆分（`nps-gateway` 改用新的
+- **CR-0001** —— Anchor / Bridge Node 拆分（`nps-ingress` 改用新的
   `LabAcacia.NPS.NWP.Anchor` 包）。
 
 完整套件级汇总见

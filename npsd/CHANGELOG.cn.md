@@ -6,6 +6,15 @@
 
 ---
 
+## [1.0.0-alpha.7] —— 2026-05-18
+
+### 跟随套件
+
+- 跟随 NPS 套件 `v1.0.0-alpha.7`。项目版本、publish-overlay 版本以及
+  所有 `LabAcacia.NPS.*` PackageReference 已统一对齐到 alpha.7 发布线。
+
+---
+
 ## [1.0.0-alpha.6] —— 2026-05-12
 
 ### 跟随套件

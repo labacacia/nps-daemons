@@ -7,7 +7,7 @@ version: "3.9"
 # Tail one daemon's logs:    docker compose logs -f nps-runner
 #
 # Production deployments will typically:
-#   - put nps-gateway behind nginx/Caddy/Traefik for TLS termination
+#   - put nps-ingress behind nginx/Caddy/Traefik for TLS termination
 #   - run npsd on every machine that hosts NPS workers
 #   - run nps-registry once per cluster, fronted by an internal LB
 #   - run nps-runner once per machine alongside npsd
@@ -21,7 +21,7 @@ services:
     image: labacacia/npsd:1.0.0-alpha.6
     restart: unless-stopped
     ports:
-      - "127.0.0.1:17433:17433"   # loopback only — public ingress is nps-gateway
+      - "127.0.0.1:17433:17433"   # loopback only — public ingress is nps-ingress
     volumes:
       - npsd-data:/data
     environment:
@@ -38,14 +38,14 @@ services:
     depends_on:
       - npsd
 
-  nps-gateway:
+  nps-ingress:
     build:
-      context: ./nps-gateway
+      context: ./nps-ingress
       dockerfile: Dockerfile
-    image: labacacia/nps-gateway:1.0.0-alpha.6
+    image: labacacia/nps-ingress:1.0.0-alpha.6
     restart: unless-stopped
     ports:
-      - "${NPS_GATEWAY_PORT:-8080}:8080"
+      - "${NPS_INGRESS_PORT:-8080}:8080"
     depends_on:
       - npsd
 

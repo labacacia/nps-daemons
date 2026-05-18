@@ -1,8 +1,17 @@
 [English Version](./CHANGELOG.md) | 中文版
 
-# 变更日志 —— `nps-gateway`
+# 变更日志 —— `nps-ingress`
 
 格式参考 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.1.0/)。Tag 跟随 NPS 套件统一 SemVer。
+
+---
+
+## [1.0.0-alpha.7] —— 2026-05-18
+
+### 跟随套件
+
+- 跟随 NPS 套件 `v1.0.0-alpha.7`。项目版本、publish-overlay 版本以及
+  所有 `LabAcacia.NPS.*` PackageReference 已统一对齐到 alpha.7 发布线。
 
 ---
 
@@ -22,7 +31,7 @@
 - `LabAcacia.NPS.NWP.Anchor` 依赖升至 `1.0.0-alpha.5`。
   将拓扑事件的 wire 字段 `estimated_npt` 重命名为 `cgn_est`，以符合
   Cognon Budget 规范（NPS-5 §4.3 / NPS-AaaS §2.3）。
-- gateway 自身代码无变更；API 接口与路由行为与 alpha.4 完全一致。
+- ingress daemon 自身代码无变更；API 接口与路由行为与 alpha.4 完全一致。
 
 ---
 
@@ -47,7 +56,7 @@
 - Phase 1 骨架：`:8080` HTTP 监听 + `/health` 文档化里程碑，运维
   可以在 alpha.3 就把 nginx/Caddy/Traefik 接到它前面，alpha.4 → alpha.5
   只翻行为开关。
-- 多阶段 Docker 镜像（非 root `npsgw` 用户，暴露 `:8080`）。
+- 多阶段 Docker 镜像（非 root `npsing` 用户，暴露 `:8080`）。
 
 ### 推迟到 alpha.4 / alpha.5
 

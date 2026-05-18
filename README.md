@@ -23,7 +23,7 @@ layers of the standard NPS deployment topology.
 |-------|--------|--------------|----------------------------|
 | 1 | [`npsd`](./npsd/) | `127.0.0.1:17433` | L1 minimum: HTTP listener, root keypair generation (POSIX `0600`), `/.nwm`, `/health`. |
 | 1 | [`nps-runner`](./nps-runner/) | — (worker) | Phase 1 skeleton — Generic Host scaffolding + 30 s heartbeat. Inbox watcher + spawn-spec resolver land alpha.6+. |
-| 2 | [`nps-gateway`](./nps-gateway/) | `:8080` | Phase 1 skeleton — public HTTP listener + `/health`. TLS termination + rate limit + auth + CGN debit + reputation lookup land alpha.4 → alpha.5. |
+| 2 | [`nps-ingress`](./nps-ingress/) | `:8080` | Phase 1 skeleton — public HTTP listener + `/health`. TLS termination + rate limit + auth + CGN debit + reputation lookup land alpha.4 → alpha.5. |
 | 2 | [`nps-registry`](./nps-registry/) | `:17436` | Phase 1 skeleton — NDP `Resolve` / `Graph` / `Announce` URLs return `NDP-REGISTRY-UNAVAILABLE` so consumers can wire and gracefully fall back. SQLite-backed real registry lands alpha.4. |
 
 Each daemon lives in its own subdirectory with its own
@@ -53,7 +53,7 @@ docker compose up -d
 
 # Each daemon's /health is reachable on its own port
 curl -s http://localhost:17433/health   # npsd
-curl -s http://localhost:8080/health    # nps-gateway
+curl -s http://localhost:8080/health    # nps-ingress
 curl -s http://localhost:17436/health   # nps-registry
 
 docker compose logs -f nps-runner       # nps-runner has no HTTP surface
@@ -100,7 +100,7 @@ Replace `1.0.0-alpha.6` with the current release tag as needed.
 
 ```bash
 VER=1.0.0-alpha.6
-for pkg in npsd nps-runner nps-gateway nps-registry; do
+for pkg in npsd nps-runner nps-ingress nps-registry; do
     curl -LO "https://github.com/labacacia/nps-daemons/releases/download/v${VER}/${pkg}_${VER//-alpha./~alpha.}_amd64.deb"
     sudo dpkg -i "${pkg}_${VER//-alpha./~alpha.}_amd64.deb"
 done
@@ -125,7 +125,7 @@ Data directory: `/var/lib/nps/npsd/` (owned by system user `npsd`)
 VER=1.0.0-alpha.6
 RPM_VER=1.0.0
 RPM_REL=0.alpha.6.1
-for pkg in npsd nps-runner nps-gateway nps-registry; do
+for pkg in npsd nps-runner nps-ingress nps-registry; do
     curl -LO "https://github.com/labacacia/nps-daemons/releases/download/v${VER}/${pkg}-${RPM_VER}-${RPM_REL}.x86_64.rpm"
     sudo rpm -i "${pkg}-${RPM_VER}-${RPM_REL}.x86_64.rpm"
 done
@@ -142,13 +142,13 @@ Data directory: `/var/lib/nps/npsd/` (owned by system user `npsd`)
 
 ```powershell
 $ver = "1.0.0-alpha.6"
-foreach ($pkg in @("npsd","nps-runner","nps-gateway","nps-registry")) {
+foreach ($pkg in @("npsd","nps-runner","nps-ingress","nps-registry")) {
     $file = "$pkg-$ver-win-x64.msi"
     Invoke-WebRequest -Uri "https://github.com/labacacia/nps-daemons/releases/download/v$ver/$file" -OutFile $file
     Start-Process msiexec.exe -ArgumentList "/i $file /quiet /norestart" -Wait
 }
 # Services start automatically; verify:
-Get-Service npsd, nps-runner, nps-gateway, nps-registry
+Get-Service npsd, nps-runner, nps-ingress, nps-registry
 ```
 
 Install path: `%ProgramFiles%\LabAcacia\<daemon>\`
@@ -159,15 +159,15 @@ Data directory: `%ProgramData%\LabAcacia\<daemon>\`
 
 ```bash
 # Debian/Ubuntu
-sudo apt remove npsd nps-runner nps-gateway nps-registry
+sudo apt remove npsd nps-runner nps-ingress nps-registry
 
 # Fedora/RHEL
-sudo rpm -e npsd nps-runner nps-gateway nps-registry
+sudo rpm -e npsd nps-runner nps-ingress nps-registry
 ```
 
 ```powershell
 # Windows
-foreach ($pkg in @("npsd","nps-runner","nps-gateway","nps-registry")) {
+foreach ($pkg in @("npsd","nps-runner","nps-ingress","nps-registry")) {
     Get-Package $pkg | Uninstall-Package
 }
 ```
@@ -184,7 +184,7 @@ Short version:
 │   nps-cloud-ca · nps-ledger                             │
 ├─────────────────────────────────────────────────────────┤
 │ Layer 2 (this repo) — network entry                     │
-│   nps-gateway (public ingress) · nps-registry (NDP)     │
+│   nps-ingress (public ingress) · nps-registry (NDP)     │
 ├─────────────────────────────────────────────────────────┤
 │ Layer 1 (this repo) — host-local                        │
 │   npsd (state host, port 17433) · nps-runner (FaaS)     │

@@ -1,6 +1,6 @@
 English | [中文版](./README.cn.md)
 
-# `nps-gateway` — NPS Daemon (Layer 2, Internet ingress)
+# `nps-ingress` — NPS Daemon (Layer 2, Internet ingress)
 
 > Reference implementation of the public-facing NPS Internet ingress.
 > Translates NPS-over-TLS traffic from the public internet into local
@@ -24,34 +24,34 @@ the daemon ecosystem.
 
 ## Naming note
 
-This is the **process** called `nps-gateway`. The *spec-level* role
+This is the **process** called `nps-ingress`. The *spec-level* role
 of "cluster control plane that routes NPS frames into NOP" has been
 renamed **Anchor Node** in the NWP specification by
 [NPS-CR-0001](https://github.com/labacacia/NPS-Release/blob/main/spec/cr/NPS-CR-0001-anchor-bridge-split.md). The
-`nps-gateway` process MAY host an Anchor Node middleware via
+`nps-ingress` process MAY host an Anchor Node middleware via
 `NPS.NWP.Anchor` — that wiring is intentionally deferred to alpha.4
 so this skeleton stays minimal.
 
 ## Quick start
 
 ```bash
-NPSGATEWAY_PORT=8080 dotnet run --project tools/daemons/nps-gateway/NpsGateway.csproj
+NPSINGRESS_PORT=8080 dotnet run --project tools/daemons/nps-ingress/NpsIngress.csproj
 curl -s http://localhost:8080/health | jq
 ```
 
 ### Docker
 
 ```bash
-docker build -f tools/daemons/nps-gateway/Dockerfile -t labacacia/nps-gateway:1.0.0-alpha.4 .
-docker run --rm -p 8080:8080 labacacia/nps-gateway:1.0.0-alpha.4
+docker build -f tools/daemons/nps-ingress/Dockerfile -t labacacia/nps-ingress:1.0.0-alpha.4 .
+docker run --rm -p 8080:8080 labacacia/nps-ingress:1.0.0-alpha.4
 ```
 
 ## Configuration (env vars)
 
 | Variable | Default | Purpose |
 |----------|---------|---------|
-| `NPSGATEWAY_PORT` | `8080` | TCP port to bind. Production deployments terminate TLS on `:443`; this Phase-1 skeleton only listens HTTP. |
-| `NPSGATEWAY_HOST` | `0.0.0.0` | Bind address. The default is public — `nps-gateway`, unlike `npsd`, is intentionally Internet-facing. |
+| `NPSINGRESS_PORT` | `8080` | TCP port to bind. Production deployments terminate TLS on `:443`; this Phase-1 skeleton only listens HTTP. |
+| `NPSINGRESS_HOST` | `0.0.0.0` | Bind address. The default is public — `nps-ingress`, unlike `npsd`, is intentionally Internet-facing. |
 
 ## License
 

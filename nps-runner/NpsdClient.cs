@@ -76,7 +76,7 @@ internal sealed class NpsdClient(HttpClient http, RunnerOptions opts)
         foreach (var m in arr.EnumerateArray())
         {
             result[i++] = new InboxPollMessage(
-                MessageId:   m.GetProperty("message_id").ValueKind == System.Text.Json.JsonValueKind.Number ? m.GetProperty("message_id").GetUInt64().ToString() : m.GetProperty("message_id").GetString()!,
+                MessageId:   m.GetProperty("message_id").GetString()!,
                 ContentType: m.GetProperty("content_type").GetString() ?? "application/octet-stream",
                 PayloadB64:  m.GetProperty("payload_b64").GetString()!);
         }

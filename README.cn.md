@@ -22,7 +22,7 @@
 |----|--------|----------|------------------------|
 | 1 | [`npsd`](./npsd/) | `127.0.0.1:17433` | L1 最小集：HTTP 监听、root keypair 生成（POSIX `0600`）、`/.nwm`、`/health`。|
 | 1 | [`nps-runner`](./nps-runner/) | —（worker）| Phase 1 骨架 —— Generic Host 脚手架 + 30 秒心跳。Inbox 监听 + spawn-spec 解析在 alpha.6+。|
-| 2 | [`nps-gateway`](./nps-gateway/) | `:8080` | Phase 1 骨架 —— 公网 HTTP 监听 + `/health`。TLS 卸载 + rate limit + auth + CGN 计费 + reputation 查询在 alpha.4 → alpha.5。|
+| 2 | [`nps-ingress`](./nps-ingress/) | `:8080` | Phase 1 骨架 —— 公网 HTTP 监听 + `/health`。TLS 卸载 + rate limit + auth + CGN 计费 + reputation 查询在 alpha.4 → alpha.5。|
 | 2 | [`nps-registry`](./nps-registry/) | `:17436` | Phase 1 骨架 —— NDP `Resolve` / `Graph` / `Announce` 全部返回 `NDP-REGISTRY-UNAVAILABLE`，方便消费者预先接线 + 优雅降级。SQLite 实仓在 alpha.4。|
 
 每个 daemon 在自己的子目录里有独立的 `Dockerfile` / `docker-compose.yml` /
@@ -51,7 +51,7 @@ docker compose up -d
 
 # 各 daemon 的 /health 在各自端口
 curl -s http://localhost:17433/health   # npsd
-curl -s http://localhost:8080/health    # nps-gateway
+curl -s http://localhost:8080/health    # nps-ingress
 curl -s http://localhost:17436/health   # nps-registry
 
 docker compose logs -f nps-runner       # nps-runner 无 HTTP 接口
@@ -96,7 +96,7 @@ dotnet run
 
 ```bash
 VER=1.0.0~alpha.6   # Debian 版本格式（用 ~ 分隔预发布）
-for pkg in npsd nps-runner nps-gateway nps-registry; do
+for pkg in npsd nps-runner nps-ingress nps-registry; do
     curl -LO "https://github.com/labacacia/nps-daemons/releases/download/v1.0.0-alpha.6/${pkg}_${VER}_amd64.deb"
     sudo dpkg -i "${pkg}_${VER}_amd64.deb"
 done
@@ -112,7 +112,7 @@ done
 VER=1.0.0-alpha.6
 RPM_VER=1.0.0
 RPM_REL=0.alpha.6.1
-for pkg in npsd nps-runner nps-gateway nps-registry; do
+for pkg in npsd nps-runner nps-ingress nps-registry; do
     curl -LO "https://github.com/labacacia/nps-daemons/releases/download/v${VER}/${pkg}-${RPM_VER}-${RPM_REL}.x86_64.rpm"
     sudo rpm -i "${pkg}-${RPM_VER}-${RPM_REL}.x86_64.rpm"
 done
@@ -126,13 +126,13 @@ done
 
 ```powershell
 $ver = "1.0.0-alpha.6"
-foreach ($pkg in @("npsd","nps-runner","nps-gateway","nps-registry")) {
+foreach ($pkg in @("npsd","nps-runner","nps-ingress","nps-registry")) {
     $file = "$pkg-$ver-win-x64.msi"
     Invoke-WebRequest -Uri "https://github.com/labacacia/nps-daemons/releases/download/v$ver/$file" -OutFile $file
     Start-Process msiexec.exe -ArgumentList "/i $file /quiet /norestart" -Wait
 }
 # 服务自动启动，验证：
-Get-Service npsd, nps-runner, nps-gateway, nps-registry
+Get-Service npsd, nps-runner, nps-ingress, nps-registry
 ```
 
 安装路径：`%ProgramFiles%\LabAcacia\<daemon>\`
@@ -143,15 +143,15 @@ Get-Service npsd, nps-runner, nps-gateway, nps-registry
 
 ```bash
 # Debian/Ubuntu
-sudo apt remove npsd nps-runner nps-gateway nps-registry
+sudo apt remove npsd nps-runner nps-ingress nps-registry
 
 # Fedora/RHEL
-sudo rpm -e npsd nps-runner nps-gateway nps-registry
+sudo rpm -e npsd nps-runner nps-ingress nps-registry
 ```
 
 ```powershell
 # Windows
-foreach ($pkg in @("npsd","nps-runner","nps-gateway","nps-registry")) {
+foreach ($pkg in @("npsd","nps-runner","nps-ingress","nps-registry")) {
     Get-Package $pkg | Uninstall-Package
 }
 ```
@@ -167,7 +167,7 @@ foreach ($pkg in @("npsd","nps-runner","nps-gateway","nps-registry")) {
 │   nps-cloud-ca · nps-ledger                             │
 ├─────────────────────────────────────────────────────────┤
 │ Layer 2（本仓库）—— 网络入口                            │
-│   nps-gateway（公网 ingress）· nps-registry（NDP）       │
+│   nps-ingress（公网 ingress）· nps-registry（NDP）       │
 ├─────────────────────────────────────────────────────────┤
 │ Layer 1（本仓库）—— 主机本地                            │
 │   npsd（状态宿主，:17433）· nps-runner（FaaS）           │

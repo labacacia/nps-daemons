@@ -10,7 +10,7 @@
 
 ## 这个二进制做什么
 
-- **绑定**：默认 `127.0.0.1:17433`（只在 loopback —— 公网 ingress 是 `nps-gateway` 的活）。可用 `NPSD_HOST` / `NPSD_PORT` 覆盖。
+- **绑定**：默认 `127.0.0.1:17433`（只在 loopback —— 公网 ingress 是 `nps-ingress` 的活）。可用 `NPSD_HOST` / `NPSD_PORT` 覆盖。
 - **Root keypair**：首次启动生成 Ed25519 root keypair；落盘到 `${NPSD_DATA_DIR:-~/.local/share/npsd}/root.ed25519.pkcs8`，POSIX 文件权限 `0600`（满足 NPS-Node Profile L1 合规用例 `TC-N1-NIP-01`）。
 - **Sub-NID 签发**：基于主机 root NID 生成、持久化 sub-NID。承载 IdentFrame 由 root key 签名。SQLite 存于 `${NPSD_DATA_DIR}/sub-nids.sqlite`。
 - **Per-NID inbox**：按 sub-NID 分桶的短期内存队列，支持 long-poll、ack、depth、priority、TTL、per-NID 深度上限。
@@ -87,7 +87,7 @@ docker run --rm -p 17433:17433 \
 | 变量 | 默认 | 用途 |
 |------|------|------|
 | `NPSD_PORT` | `17433` | 绑定端口。 |
-| `NPSD_HOST` | `127.0.0.1` | 绑定地址。仅在隔离网络命名空间里设 `0.0.0.0`，不要直接对公网暴露（公网 ingress 用 `nps-gateway`）。|
+| `NPSD_HOST` | `127.0.0.1` | 绑定地址。仅在隔离网络命名空间里设 `0.0.0.0`，不要直接对公网暴露（公网 ingress 用 `nps-ingress`）。|
 | `NPSD_DATA_DIR` | `~/.local/share/npsd` | 持久化状态（root keypair 文件 + sub-NID SQLite）。|
 | `NPSD_HOST_NID_PREFIX` | `urn:nps:host:{HostFingerprint}` | sub-NID 派生的 NID 前缀。仅在主机已被上游 CA 用其他 NID 注册时覆盖。|
 | `NPSD_SUB_NID_VALIDITY_DAYS` | `7` | 签发 sub-NID 的默认有效期。 |

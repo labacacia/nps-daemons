@@ -11,7 +11,7 @@ English | [中文版](./README.cn.md)
 
 ## What this binary does
 
-- **Bind** `127.0.0.1:17433` by default (loopback only — public ingress is `nps-gateway`'s job). Override with `NPSD_HOST` / `NPSD_PORT`.
+- **Bind** `127.0.0.1:17433` by default (loopback only — public ingress is `nps-ingress`'s job). Override with `NPSD_HOST` / `NPSD_PORT`.
 - **Root keypair**: generates an Ed25519 root keypair on first start; persists to `${NPSD_DATA_DIR:-~/.local/share/npsd}/root.ed25519.pkcs8` with POSIX mode `0600` (NPS-Node Profile L1 conformance test `TC-N1-NIP-01`).
 - **Sub-NID issuance**: mint and persist sub-NIDs derived from the host root NID. Carrier IdentFrames are signed with the root key. SQLite-backed at `${NPSD_DATA_DIR}/sub-nids.sqlite`.
 - **Per-NID inbox**: short-term in-memory queue per sub-NID with long-poll, ack, depth, priority, TTL, and per-NID depth caps.
@@ -87,7 +87,7 @@ All endpoints return JSON unless noted. Errors carry `{error, status, message}` 
 | Variable | Default | Purpose |
 |----------|---------|---------|
 | `NPSD_PORT` | `17433` | TCP port to bind. |
-| `NPSD_HOST` | `127.0.0.1` | Bind address. Use `0.0.0.0` only inside an isolated network namespace — never expose `npsd` directly to the public internet (use `nps-gateway`). |
+| `NPSD_HOST` | `127.0.0.1` | Bind address. Use `0.0.0.0` only inside an isolated network namespace — never expose `npsd` directly to the public internet (use `nps-ingress`). |
 | `NPSD_DATA_DIR` | `~/.local/share/npsd` | Persistent state (root keypair file + sub-NID SQLite). |
 | `NPSD_HOST_NID_PREFIX` | `urn:nps:host:{HostFingerprint}` | NID prefix used when minting sub-NIDs. Override only if the host has been registered with an upstream CA under a different NID. |
 | `NPSD_SUB_NID_VALIDITY_DAYS` | `7` | Default validity window for issued sub-NIDs. |

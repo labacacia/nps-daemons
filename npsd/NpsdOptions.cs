@@ -17,7 +17,7 @@ public sealed record NpsdOptions
     /// <summary>
     /// Bind address. Default: 127.0.0.1 (loopback). Set to 0.0.0.0 only inside
     /// an isolated network namespace — never expose npsd directly to the public
-    /// internet (use <c>nps-gateway</c>).
+    /// internet (use <c>nps-ingress</c>).
     /// </summary>
     public string Host { get; init; } = "127.0.0.1";
 

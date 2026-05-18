@@ -8,6 +8,15 @@ Until NPS reaches v1.0 stable, every repository in the suite is synchronized to 
 
 ---
 
+## [1.0.0-alpha.7] — 2026-05-18
+
+### Changed
+
+- Aligns all daemon image tags, project versions, publish-overlay versions,
+  and `LabAcacia.NPS.*` PackageReferences to `1.0.0-alpha.7`.
+
+---
+
 ## [1.0.0-alpha.6] — 2026-05-12
 
 ### Changed
@@ -34,7 +43,7 @@ Until NPS reaches v1.0 stable, every repository in the suite is synchronized to 
   gating and `cgn_est` per-event field; HTTP 501 +
   `NWP-RESERVED-TYPE-UNSUPPORTED` for unknown reserved NWP frame types.
   See [`npsd/CHANGELOG.md`](./npsd/CHANGELOG.md) for details.
-- **`nps-gateway`** — bumps `LabAcacia.NPS.NWP.Anchor` to
+- **`nps-ingress`** — bumps `LabAcacia.NPS.NWP.Anchor` to
   `1.0.0-alpha.5` (wire field rename `estimated_npt → cgn_est`).
 - **`nps-runner`** — inbox watcher + worker spawn fully implemented (L3
   FaaS runtime); replaces the alpha.3/alpha.4 heartbeat skeleton.
@@ -88,10 +97,10 @@ This release rolls up suite-wide protocol changes that landed in NPS
   in `LabAcacia.NPS.NIP` (`nps-cloud-ca` and `nip-ca-server` will pick
   this up downstream).
 - **NPS-CR-0002** — Anchor Node `topology.snapshot` /
-  `topology.stream` (`nps-gateway` will wire this once the Anchor
+  `topology.stream` (`nps-ingress` will wire this once the Anchor
   middleware lands).
 
-Still phase-1 skeletons in this release: `nps-runner`, `nps-gateway`
+Still phase-1 skeletons in this release: `nps-runner`, `nps-ingress`
 (no functional change since alpha.3).
 
 See [`NPS-Release/CHANGELOG.md`](https://github.com/labacacia/NPS-Release/blob/main/CHANGELOG.md)
@@ -118,7 +127,7 @@ for the full suite-level rollup.
   skeleton: Generic Host scaffolding with a 30-second heartbeat. Inbox
   watcher + `spawn_spec_ref` resolver + worker lifecycle land at L3
   stage (alpha.5+).
-- **`nps-gateway`** (Layer 2, public Internet ingress) — Phase 1
+- **`nps-ingress`** (Layer 2, public Internet ingress) — Phase 1
   skeleton: HTTP listener on `:8080` + `/health` documenting planned
   milestones. TLS termination, rate-limit, NeuronHub auth, CGN debit,
   NPS-RFC-0004 reputation lookup, and NPS-CR-0001 Anchor Node
@@ -157,7 +166,7 @@ This release rolls up suite-wide protocol changes that landed in NPS
 - **RFC-0004** — NID reputation log (Phase 1; entry shape only —
   `nps-ledger`'s in-memory honouring lives in `innolotus/nps-ledger`,
   not this repo).
-- **CR-0001** — Anchor + Bridge Node split (`nps-gateway` is wired
+- **CR-0001** — Anchor + Bridge Node split (`nps-ingress` is wired
   against the new `LabAcacia.NPS.NWP.Anchor` package).
 
 See [`NPS-Release/CHANGELOG.md`](https://github.com/labacacia/NPS-Release/blob/main/CHANGELOG.md)

@@ -77,7 +77,7 @@ public static class InboxEndpoints
 
                 return Results.Json(new
                 {
-                    message_id = id,
+                    message_id = id.ToString(),
                     nid,
                     enqueued_at = DateTimeOffset.UtcNow.ToString("O"),
                     expires_at  = DateTimeOffset.UtcNow.AddSeconds(ttlSec).ToString("O"),
@@ -113,7 +113,7 @@ public static class InboxEndpoints
                 count    = msgs.Count,
                 messages = msgs.Select(m => new
                 {
-                    message_id   = m.MessageId,
+                    message_id   = m.MessageId.ToString(),
                     enqueued_at  = m.EnqueuedAt.ToString("O"),
                     expires_at   = m.ExpiresAt.ToString("O"),
                     priority     = m.Priority,
@@ -139,7 +139,7 @@ public static class InboxEndpoints
                     error      = "NWP-INBOX-MESSAGE-NOT-FOUND",
                     status     = "NPS-CLIENT-NOT-FOUND",
                     nid,
-                    message_id = messageId,
+                    message_id = messageId.ToString(),
                     message    = "Already acked, or never enqueued.",
                 }, s_jsonOpts, statusCode: 404);
         });

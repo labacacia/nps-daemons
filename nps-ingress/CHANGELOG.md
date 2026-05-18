@@ -1,8 +1,18 @@
 English | [中文版](./CHANGELOG.cn.md)
 
-# Changelog — `nps-gateway`
+# Changelog — `nps-ingress`
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Tags follow the umbrella SemVer of the NPS suite.
+
+---
+
+## [1.0.0-alpha.7] — 2026-05-18
+
+### Tracking the suite
+
+- Tracks NPS suite `v1.0.0-alpha.7`. Project version, publish-overlay
+  version, and all `LabAcacia.NPS.*` PackageReferences are aligned to the
+  alpha.7 release train.
 
 ---
 
@@ -23,7 +33,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - Bumps `LabAcacia.NPS.NWP.Anchor` dependency to `1.0.0-alpha.5`.
   Renames the wire field `estimated_npt` → `cgn_est` in topology events
   to match the Cognon Budget spec (NPS-5 §4.3 / NPS-AaaS §2.3).
-- No changes to the gateway's own code; the API surface and routing
+- No changes to the ingress daemon's own code; the API surface and routing
   behaviour are identical to alpha.4.
 
 ---
@@ -35,9 +45,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - Bumps `LabAcacia.NPS.*` NuGet dependencies to `v1.0.0-alpha.4`,
   including the new `LabAcacia.NPS.NWP.Anchor` package which now ships
   **NPS-CR-0002** topology query types (`topology.snapshot` /
-  `topology.stream`). The gateway daemon does **not** wire these yet —
+  `topology.stream`). The ingress daemon does **not** wire these yet —
   Anchor middleware integration remains the alpha.4 → alpha.5 work.
-- No functional changes in the gateway itself since alpha.3 — still the
+- No functional changes in the ingress daemon itself since alpha.3 — still the
   `:8080` HTTP listener + `/health` skeleton documenting the planned
   TLS / rate-limit / auth / CGN-debit / reputation-lookup path.
 
@@ -51,7 +61,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - Phase 1 skeleton: HTTP listener on `:8080` and `/health` documenting
   the planned milestones, so operators can put nginx/Caddy/Traefik in
   front of it during alpha.3 and only flip behavior at alpha.4 → alpha.5.
-- Multi-stage Docker image (non-root `npsgw` user, exposes `:8080`).
+- Multi-stage Docker image (non-root `npsing` user, exposes `:8080`).
 
 ### Deferred to alpha.4 / alpha.5
 
