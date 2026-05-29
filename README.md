@@ -19,10 +19,10 @@ layers of the standard NPS deployment topology.
 
 ## What's in this repo
 
-| Layer | Daemon | Default port | Status at `v1.0.0-alpha.6` |
+| Layer | Daemon | Default port | Status at `v1.0.0-alpha.11` |
 |-------|--------|--------------|----------------------------|
 | 1 | [`npsd`](./npsd/) | `127.0.0.1:17433` | L1 minimum: HTTP listener, root keypair generation (POSIX `0600`), `/.nwm`, `/health`. |
-| 1 | [`nps-runner`](./nps-runner/) | — (worker) | Phase 1 skeleton — Generic Host scaffolding + 30 s heartbeat. Inbox watcher + spawn-spec resolver land alpha.6+. |
+| 1 | [`nps-runner`](./nps-runner/) | — (worker) | Phase 1 skeleton — Generic Host scaffolding + 30 s heartbeat. Inbox watcher + spawn-spec resolver land alpha.11+. |
 | 2 | [`nps-ingress`](./nps-ingress/) | `:8080` | Phase 1 skeleton — public HTTP listener + `/health`. TLS termination + rate limit + auth + CGN debit + reputation lookup land alpha.4 → alpha.5. |
 | 2 | [`nps-registry`](./nps-registry/) | `:17436` | Phase 1 skeleton — NDP `Resolve` / `Graph` / `Announce` URLs return `NDP-REGISTRY-UNAVAILABLE` so consumers can wire and gracefully fall back. SQLite-backed real registry lands alpha.4. |
 
@@ -71,8 +71,8 @@ Each subdirectory ships a self-contained Dockerfile:
 
 ```bash
 cd npsd
-docker build -t labacacia/npsd:1.0.0-alpha.6 .
-docker run --rm -p 17433:17433 -v npsd-data:/data labacacia/npsd:1.0.0-alpha.6
+docker build -t labacacia/npsd:1.0.0-alpha.11 .
+docker run --rm -p 17433:17433 -v npsd-data:/data labacacia/npsd:1.0.0-alpha.11
 ```
 
 The .NET 10 SDK works for source builds too:
@@ -94,12 +94,12 @@ Self-contained native packages — no .NET runtime required — are published as
 the Docker images. Each package installs a systemd service (Linux) or a Windows service
 registered under a virtual `NT SERVICE\<daemon>` account.
 
-Replace `1.0.0-alpha.6` with the current release tag as needed.
+Replace `1.0.0-alpha.11` with the current release tag as needed.
 
 ### Ubuntu / Debian (amd64)
 
 ```bash
-VER=1.0.0-alpha.6
+VER=1.0.0-alpha.11
 for pkg in npsd nps-runner nps-ingress nps-registry; do
     curl -LO "https://github.com/labacacia/nps-daemons/releases/download/v${VER}/${pkg}_${VER//-alpha./~alpha.}_amd64.deb"
     sudo dpkg -i "${pkg}_${VER//-alpha./~alpha.}_amd64.deb"
@@ -109,8 +109,8 @@ done
 Or install only the daemons you need, e.g.:
 
 ```bash
-VER=1.0.0~alpha.6   # Debian version format (~ replaces -)
-curl -LO "https://github.com/labacacia/nps-daemons/releases/download/v1.0.0-alpha.6/npsd_${VER}_amd64.deb"
+VER=1.0.0~alpha.11   # Debian version format (~ replaces -)
+curl -LO "https://github.com/labacacia/nps-daemons/releases/download/v1.0.0-alpha.11/npsd_${VER}_amd64.deb"
 sudo dpkg -i "npsd_${VER}_amd64.deb"
 sudo systemctl status npsd
 ```
@@ -122,7 +122,7 @@ Data directory: `/var/lib/nps/npsd/` (owned by system user `npsd`)
 ### Fedora / RHEL (x86_64)
 
 ```bash
-VER=1.0.0-alpha.6
+VER=1.0.0-alpha.11
 RPM_VER=1.0.0
 RPM_REL=0.alpha.6.1
 for pkg in npsd nps-runner nps-ingress nps-registry; do
@@ -141,7 +141,7 @@ Data directory: `/var/lib/nps/npsd/` (owned by system user `npsd`)
 ### Windows (x64, MSI)
 
 ```powershell
-$ver = "1.0.0-alpha.6"
+$ver = "1.0.0-alpha.11"
 foreach ($pkg in @("npsd","nps-runner","nps-ingress","nps-registry")) {
     $file = "$pkg-$ver-win-x64.msi"
     Invoke-WebRequest -Uri "https://github.com/labacacia/nps-daemons/releases/download/v$ver/$file" -OutFile $file

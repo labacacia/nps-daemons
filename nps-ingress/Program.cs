@@ -36,7 +36,7 @@ app.MapGet("/health", () => Results.Json(new
 {
     status         = "ok",
     daemon         = "nps-ingress",
-    version        = "1.0.0-alpha.3",
+    version        = "1.0.0-alpha.11",
     layer          = 2,
     role           = "Internet ingress (skeleton)",
     phase          = 1,
@@ -52,5 +52,5 @@ app.MapGet("/health", () => Results.Json(new
     },
 }));
 
-app.Logger.LogInformation("nps-ingress v1.0.0-alpha.3 starting on configured port (Phase 1 skeleton — TLS / auth / CGN / reputation land at alpha.4+; see docs/daemons/architecture.md)");
+app.Logger.LogInformation("nps-ingress v1.0.0-alpha.11 starting on configured port (Phase 1 skeleton — TLS / auth / CGN / reputation land at alpha.11+; see docs/daemons/architecture.md)");
 app.Run();

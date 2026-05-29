@@ -111,7 +111,7 @@ English | [中文版](./architecture.cn.md)
 
 ## Phasing across alpha + beta
 
-| Daemon | alpha.3 | alpha.4 (this release) | alpha.6+ | beta / 1.0 |
+| Daemon | alpha.3 | alpha.4 (this release) | alpha.11+ | beta / 1.0 |
 |--------|---------|------------------------|----------|------------|
 | `npsd` | L1 minimum: HTTP listener on `127.0.0.1:17433`, root keypair generation, `/.nwm`, baseline `/health`, AnnounceFrame on local NDP | L1+: sub-NID issuance, per-NID inbox queue, NCP native-mode preamble runtime (NPS-RFC-0001) | Push to resident agents | Conformance with full L1 + L2 |
 | `nps-runner` | Skeleton + Generic-Host worker; documents the inbox-watch contract | Inbox poller wired through `npsd` | Spawn lifecycle, isolation | L3 conformance |

@@ -35,8 +35,8 @@ curl -s http://localhost:8080/health | jq
 ### Docker
 
 ```bash
-docker build -f tools/daemons/nps-ingress/Dockerfile -t labacacia/nps-ingress:1.0.0-alpha.4 .
-docker run --rm -p 8080:8080 labacacia/nps-ingress:1.0.0-alpha.4
+docker build -f tools/daemons/nps-ingress/Dockerfile -t labacacia/nps-ingress:1.0.0-alpha.11 .
+docker run --rm -p 8080:8080 labacacia/nps-ingress:1.0.0-alpha.11
 ```
 
 ## 配置（环境变量）

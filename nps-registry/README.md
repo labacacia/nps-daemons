@@ -19,7 +19,7 @@ sequence counter bumps on every Announce or eviction. File-backed or
 in-memory storage is selected via env.
 
 L2 cross-machine federation (HA cluster mode / gossip) is queued for
-alpha.6+.
+alpha.11+.
 
 ## Endpoints
 
@@ -48,11 +48,11 @@ curl -s http://localhost:17436/v1/graph | jq
 ### Docker
 
 ```bash
-docker build -f tools/daemons/nps-registry/Dockerfile -t labacacia/nps-registry:1.0.0-alpha.4 .
+docker build -f tools/daemons/nps-registry/Dockerfile -t labacacia/nps-registry:1.0.0-alpha.11 .
 docker run --rm -p 17436:17436 \
   -v /data:/data \
   -e NPSREGISTRY_SQLITE_PATH=/data/registry.db \
-  labacacia/nps-registry:1.0.0-alpha.4
+  labacacia/nps-registry:1.0.0-alpha.11
 ```
 
 ## Configuration (env vars)

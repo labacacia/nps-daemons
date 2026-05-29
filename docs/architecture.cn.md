@@ -109,7 +109,7 @@
 
 ## alpha + beta 阶段化
 
-| Daemon | alpha.3 | alpha.4（本次） | alpha.6+ | beta / 1.0 |
+| Daemon | alpha.3 | alpha.4（本次） | alpha.11+ | beta / 1.0 |
 |--------|---------|----------------|----------|------------|
 | `npsd` | L1 最小集：`127.0.0.1:17433` 监听、root keypair 生成、`/.nwm`、基础 `/health`、本机 NDP 上发 AnnounceFrame | L1+：sub-NID 签发、per-NID inbox 队列、NCP 原生模式前导 runtime（NPS-RFC-0001）| 推送到 resident agent | 完整 L1 + L2 合规 |
 | `nps-runner` | 骨架 + Generic-Host worker；记录 inbox-watch 契约 | Inbox poller 接入 `npsd` | Spawn 生命周期、隔离 | L3 合规 |

@@ -23,7 +23,7 @@
 - Sub-NID 签发：`npsd` 为本机 agent 签发子 NID。
 - Per-NID inbox 队列：resident agent 通过 `npsd` 的内存 inbox 接收消息。
 
-## alpha.6+ 还没做的部分
+## alpha.11+ 还没做的部分
 
 按 `docs/daemons/architecture.md` 的逐 daemon 阶段表跟踪：
 
@@ -47,10 +47,10 @@ curl -s http://127.0.0.1:17433/.nwm   | jq
 ### Docker
 
 ```bash
-docker build -f tools/daemons/npsd/Dockerfile -t labacacia/npsd:1.0.0-alpha.4 .
+docker build -f tools/daemons/npsd/Dockerfile -t labacacia/npsd:1.0.0-alpha.11 .
 docker run --rm -p 17433:17433 \
   -v npsd-data:/data \
-  labacacia/npsd:1.0.0-alpha.4
+  labacacia/npsd:1.0.0-alpha.11
 ```
 
 ## API

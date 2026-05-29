@@ -24,7 +24,7 @@ English | [中文版](./README.cn.md)
 - Sub-NID issuance: `npsd` signs child NIDs for local agents.
 - Per-NID inbox queue: resident agents receive messages via `npsd`'s in-memory inbox.
 
-## What is NOT yet implemented (alpha.6+)
+## What is NOT yet implemented (alpha.11+)
 
 Tracked in `docs/daemons/architecture.md` under the per-daemon phasing table:
 
@@ -47,10 +47,10 @@ curl -s http://127.0.0.1:17433/.nwm   | jq
 ### Docker
 
 ```bash
-docker build -f tools/daemons/npsd/Dockerfile -t labacacia/npsd:1.0.0-alpha.4 .
+docker build -f tools/daemons/npsd/Dockerfile -t labacacia/npsd:1.0.0-alpha.11 .
 docker run --rm -p 17433:17433 \
   -v npsd-data:/data \
-  labacacia/npsd:1.0.0-alpha.4
+  labacacia/npsd:1.0.0-alpha.11
 ```
 
 ## API

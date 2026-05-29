@@ -13,7 +13,7 @@
 公告以 TTL lazy expiry 方式持久化（无需后台定时器），每次 Announce 或
 eviction 均自增单调 per-cluster graph 序号。文件存储或内存存储通过 env 选择。
 
-L2 跨机 federation（HA cluster 模式 / gossip）排队到 alpha.6+。
+L2 跨机 federation（HA cluster 模式 / gossip）排队到 alpha.11+。
 
 ## 端点
 
@@ -42,11 +42,11 @@ curl -s http://localhost:17436/v1/graph | jq
 ### Docker
 
 ```bash
-docker build -f tools/daemons/nps-registry/Dockerfile -t labacacia/nps-registry:1.0.0-alpha.4 .
+docker build -f tools/daemons/nps-registry/Dockerfile -t labacacia/nps-registry:1.0.0-alpha.11 .
 docker run --rm -p 17436:17436 \
   -v /data:/data \
   -e NPSREGISTRY_SQLITE_PATH=/data/registry.db \
-  labacacia/nps-registry:1.0.0-alpha.4
+  labacacia/nps-registry:1.0.0-alpha.11
 ```
 
 ## 配置（环境变量）

@@ -16,7 +16,7 @@ English | [中文版](./README.cn.md)
 endpoint that documents the planned milestones. Real ingress logic
 (TLS termination, rate limit, auth, CGN debit, reputation lookup,
 Anchor Node middleware wiring per [NPS-CR-0001](https://github.com/labacacia/NPS-Release/blob/main/spec/cr/NPS-CR-0001-anchor-bridge-split.md))
-remains planned for alpha.6+.
+remains planned for alpha.11+.
 
 This skeleton has been in place since alpha.3 so that the deployment surface (process
 name, NuGet package id, Docker image tag) is stable from the start of
@@ -42,8 +42,8 @@ curl -s http://localhost:8080/health | jq
 ### Docker
 
 ```bash
-docker build -f tools/daemons/nps-ingress/Dockerfile -t labacacia/nps-ingress:1.0.0-alpha.4 .
-docker run --rm -p 8080:8080 labacacia/nps-ingress:1.0.0-alpha.4
+docker build -f tools/daemons/nps-ingress/Dockerfile -t labacacia/nps-ingress:1.0.0-alpha.11 .
+docker run --rm -p 8080:8080 labacacia/nps-ingress:1.0.0-alpha.11
 ```
 
 ## Configuration (env vars)
