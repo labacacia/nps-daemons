@@ -144,18 +144,22 @@ app.MapGet("/v1/graph", (SqliteNdpRegistry reg) =>
     var nodes = all
         .Select(f => new NdpGraphNode
         {
-            Nid          = f.Nid,
-            NodeType     = f.NodeType,
-            Addresses    = f.Addresses,
-            Capabilities = f.Capabilities,
+            Nid       = f.Nid,
+            NodeRoles = f.NodeType is null ? null : new[] { f.NodeType },
         })
         .ToList();
 
     return Results.Json(new GraphFrame
     {
-        InitialSync = true,
-        Nodes       = nodes,
-        Seq         = seq,
+        GraphId = $"nps-registry:{seq}",
+        Nodes   = nodes,
+        Edges   = Array.Empty<NdpGraphEdge>(),
+        Ttl     = 60,
+        Metadata = JsonSerializer.SerializeToElement(new
+        {
+            initial_sync = true,
+            seq,
+        }),
     });
 });
 
