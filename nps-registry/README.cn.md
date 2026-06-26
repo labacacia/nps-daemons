@@ -42,11 +42,11 @@ curl -s http://localhost:17436/v1/graph | jq
 ### Docker
 
 ```bash
-docker build -f tools/daemons/nps-registry/Dockerfile -t labacacia/nps-registry:1.0.0-alpha.13 .
+docker build -f tools/daemons/nps-registry/Dockerfile -t labacacia/nps-registry:1.0.0-alpha.14 .
 docker run --rm -p 17436:17436 \
   -v /data:/data \
   -e NPSREGISTRY_SQLITE_PATH=/data/registry.db \
-  labacacia/nps-registry:1.0.0-alpha.13
+  labacacia/nps-registry:1.0.0-alpha.14
 ```
 
 ## 配置（环境变量）

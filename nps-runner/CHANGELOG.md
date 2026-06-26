@@ -6,6 +6,24 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ---
 
+## [1.0.0-alpha.14] — 2026-06-26
+
+- Suite-wide version sync to 1.0.0-alpha.14.
+
+## [1.0.0-alpha.13] — 2026-06-13
+
+### Added
+
+- **NPS-CR-0007 task-claim lease protocol** (`LeaseStore.cs`). The inbox dispatch now claims an
+  atomic lease per `task_id` before spawning a worker, so two runner replicas never execute the
+  same task: a live lease held by another runner returns `NOP-CLAIM-CONFLICT` (the message is
+  acked and skipped). Leases are clamped to `[10, 600]s`, auto-expire (a crashed runner's lease
+  frees for reclaim), and carry a `dedup_key = sha256(task_id ‖ dag_hash)`; a node that has
+  reported a terminal state is recorded so a reclaiming runner does not re-execute it (§4.3
+  idempotency). Lease is released on worker completion. Unit tests: `tests/LeaseStoreTests.cs`
+  (8 cases). Follow-up: lease renewal for workers running longer than the lease window;
+  distributed lease store for multi-replica deployments (CR-0007 §10 OQ-1).
+
 ## [1.0.0-alpha.7] — 2026-05-18
 
 ### Tracking the suite

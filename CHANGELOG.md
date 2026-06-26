@@ -8,10 +8,13 @@ Until NPS reaches v1.0 stable, every repository in the suite is synchronized to 
 
 ---
 
+## [1.0.0-alpha.14] — 2026-06-26
+
+- Suite-wide version sync to 1.0.0-alpha.14.
+
 ## [1.0.0-alpha.13] — 2026-06-13
 
-### Changed
-- Suite version alignment to `1.0.0-alpha.13`. No functional changes in this repository for this release; the bump keeps the whole NPS suite on a single version tag (oracle: NPS-Dev `version.yaml`).
+- Bundle image tags bumped to 1.0.0-alpha.13.
 
 ## [1.0.0-alpha.7] — 2026-05-18
 

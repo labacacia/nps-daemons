@@ -1,6 +1,7 @@
 // Copyright 2026 INNO LOTUS PTY LTD
 // SPDX-License-Identifier: Apache-2.0
 
+using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
 using Microsoft.Extensions.Hosting;
@@ -18,6 +19,7 @@ internal sealed class InboxWatcher(
     RunnerOptions opts,
     NpsdClient    client,
     WorkerManager workers,
+    LeaseStore    leases,
     ILogger<InboxWatcher> log) : BackgroundService
 {
     private static readonly JsonSerializerOptions s_json = new()
@@ -77,9 +79,35 @@ internal sealed class InboxWatcher(
                         continue;
                     }
 
-                    if (!workers.TrySpawn(spec, runnerNid, msg.MessageId, ct))
+                    // NPS-CR-0007 §4: claim the task lease before spawning so two runners never
+                    // execute the same task. The dedup key guards re-execution on reclaim (§4.3).
+                    var dedupKey = LeaseStore.ComputeDedupKey(spec.TaskId, DagHashOf(spec));
+
+                    if (leases.IsNodeDone(dedupKey, spec.TaskId))
                     {
-                        // Concurrency cap reached; leave message unacked so it re-appears next poll.
+                        log.LogInformation(
+                            "Inbox message {MsgId} (task={TaskId}): already completed — acking duplicate",
+                            msg.MessageId, spec.TaskId);
+                        await AckSafeAsync(runnerNid, msg.MessageId, ct);
+                        continue;
+                    }
+
+                    var leaseSeconds = spec.MaxRuntimeSeconds ?? LeaseStore.MaxLeaseSeconds;
+                    var claim = leases.TryClaim(spec.TaskId, runnerNid, leaseSeconds, dedupKey);
+                    if (claim.Result == ClaimResult.Conflict)
+                    {
+                        log.LogInformation(
+                            "Inbox message {MsgId} (task={TaskId}): claimed by another runner ({Err}) — acking",
+                            msg.MessageId, spec.TaskId, claim.ErrorCode);
+                        await AckSafeAsync(runnerNid, msg.MessageId, ct);
+                        continue;
+                    }
+
+                    if (!workers.TrySpawn(spec, runnerNid, msg.MessageId, dedupKey, ct))
+                    {
+                        // Concurrency cap reached; release the lease so another runner can take it,
+                        // and leave the message unacked so it re-appears next poll.
+                        leases.Release(spec.TaskId, runnerNid);
                         log.LogDebug(
                             "Inbox message {MsgId} (task={TaskId}): concurrency cap reached, will retry",
                             msg.MessageId, spec.TaskId);
@@ -123,5 +151,17 @@ internal sealed class InboxWatcher(
     {
         try   { await client.AckAsync(nid, messageId, ct); }
         catch (Exception ex) { log.LogWarning(ex, "Ack failed for message {MsgId}", messageId); }
+    }
+
+    /// <summary>
+    /// Stable digest of a spawn spec, used as the <c>dag_hash</c> component of the dedup key
+    /// (NPS-CR-0007 §4.1). For the subprocess runtime, the spawn command + args identify the
+    /// unit of work; two byte-identical specs for the same task_id are the same work.
+    /// </summary>
+    private static string DagHashOf(SpawnSpec spec)
+    {
+        var canonical = spec.Command + "\n" + string.Join(" ", spec.Args);
+        return Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(canonical)))[..16]
+            .ToLowerInvariant();
     }
 }

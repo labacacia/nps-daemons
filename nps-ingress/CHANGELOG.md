@@ -6,6 +6,26 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ---
 
+## [1.0.0-alpha.14] — 2026-06-26
+
+- Suite-wide version sync to 1.0.0-alpha.14.
+
+## [1.0.0-alpha.13] — 2026-06-13
+
+### Added
+
+- **L2 native-mode TLS terminator** (`NcpTlsListener`, NPS-RFC-0006 §6). A `SslStream` listener
+  on the configured TLS port negotiates ALPN **`nps/1.0`** over TLS 1.3 with **mutual TLS**: the
+  client certificate is validated to the configured trust anchors and its NID extracted and
+  bound to the session (`NipMtlsValidator`, reusing `NipX509Verifier`); the terminated NCP byte
+  stream is proxied to the local backend (npsd). The IdentFrame-NID cross-check
+  (`CheckSessionNidBinding`) enforces `NCP-NID-MISMATCH` (NPS-RFC-0006 §6.3). Runs alongside the
+  HTTP `/health` listener; stays idle until `NPSINGRESS_CERT_PATH` is set. New env config
+  (`IngressOptions`): `NPSINGRESS_TLS_PORT`, `NPSINGRESS_BACKEND_{HOST,PORT}`,
+  `NPSINGRESS_CERT_PATH`, `NPSINGRESS_TRUST_ANCHORS_DIR`, `NPSINGRESS_REQUIRE_CLIENT_CERT`.
+  Unit tests: `tests/NipMtlsValidatorTests.cs` (5 cases). Follow-up: IdentFrame parse to wire the
+  session NID cross-check inline; full TC-N2-* L2 conformance; rate limiting / CGN debit.
+
 ## [1.0.0-alpha.7] — 2026-05-18
 
 ### Tracking the suite

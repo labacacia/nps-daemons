@@ -22,6 +22,17 @@ internal sealed record CompletionNotification
     [JsonPropertyName("killed_reason")]
     public string? KilledReason { get; init; }
 
+    /// <summary>
+    /// NPS-CR-0007 §6 error code when the worker was killed by a lifecycle limit
+    /// (<c>NOP-RUNTIME-IDLE-TIMEOUT</c> / <c>NOP-RUNTIME-MAX-RUNTIME</c>); null otherwise.
+    /// </summary>
+    [JsonPropertyName("error_code")]
+    public string? ErrorCode { get; init; }
+
+    /// <summary>Terminal node state for the orchestrator task store: <c>COMPLETED</c> / <c>FAILED</c> (NPS-5 §5).</summary>
+    [JsonPropertyName("node_state")]
+    public string? NodeState { get; init; }
+
     /// <summary>Absolute path of the per-worker log file (stdout + stderr).</summary>
     [JsonPropertyName("log_path")]
     public string? LogPath { get; init; }

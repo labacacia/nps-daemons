@@ -14,11 +14,21 @@
 // Anchor Node middleware via NPS.NWP.Anchor; that wiring lands in
 // alpha.4.
 
+using NPS.Daemon.Ingress;
+
 var builder = WebApplication.CreateBuilder(args);
+
+var ingressOptions = IngressOptions.FromEnvironment();
+builder.Services.AddSingleton(ingressOptions);
+
+// L2 native-mode TLS terminator (NPS-RFC-0006 §6): ALPN nps/1.0, mutual TLS with NIP
+// certificates, NID-bound sessions, proxy to the local backend. Runs alongside the HTTP
+// health listener; stays idle until a server certificate is configured.
+builder.Services.AddHostedService<NcpTlsListener>();
 
 builder.WebHost.ConfigureKestrel(options =>
 {
-    var port = int.TryParse(Environment.GetEnvironmentVariable("NPSINGRESS_PORT"), out var p) ? p : 8080;
+    var port = ingressOptions.HealthPort;
     var host = Environment.GetEnvironmentVariable("NPSINGRESS_HOST") ?? "0.0.0.0";
     if (host == "0.0.0.0")
     {
@@ -36,21 +46,24 @@ app.MapGet("/health", () => Results.Json(new
 {
     status         = "ok",
     daemon         = "nps-ingress",
-    version        = "1.0.0-alpha.11",
+    version        = "1.0.0-alpha.14",
     layer          = 2,
-    role           = "Internet ingress (skeleton)",
-    phase          = 1,
-    spec_reference = "docs/daemons/architecture.md",
+    role           = "Internet ingress (L2: NCP-over-TLS terminator)",
+    phase          = 2,
+    spec_reference = "NPS-RFC-0006 §6 (native-mode TLS binding); docs/daemons/architecture.md",
+    done           = new[]
+    {
+        "L2 native-mode TLS terminator: ALPN nps/1.0, mutual TLS with NIP-cert validation + session-NID binding (NCP-NID-MISMATCH), proxy to backend (alpha.13, NPS-RFC-0006 §6)",
+    },
     todo           = new[]
     {
-        "TLS termination (alpha.4)",
-        "rate limiting (alpha.4)",
-        "NeuronHub-customer authentication (alpha.4)",
-        "CGN debit trigger (alpha.4)",
-        "NPS-RFC-0004 reputation policy lookup (alpha.5)",
-        "NPS.NWP.Anchor middleware wiring (alpha.4)",
+        "inline IdentFrame-NID cross-check on the terminated stream",
+        "TC-N2-* L2 conformance",
+        "rate limiting / CGN debit trigger",
+        "NPS-RFC-0004 reputation policy lookup",
+        "NPS.NWP.Anchor middleware wiring",
     },
 }));
 
-app.Logger.LogInformation("nps-ingress v1.0.0-alpha.11 starting on configured port (Phase 1 skeleton — TLS / auth / CGN / reputation land at alpha.11+; see docs/daemons/architecture.md)");
+app.Logger.LogInformation("nps-ingress v1.0.0-alpha.14 starting (L2 NCP-over-TLS terminator per NPS-RFC-0006 §6 — enable via NPSINGRESS_CERT_PATH; see docs/daemons/architecture.md)");
 app.Run();

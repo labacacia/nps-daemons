@@ -29,6 +29,7 @@ builder.Services
     .AddSingleton(opts)
     .AddSingleton(_ => new HttpClient { Timeout = TimeSpan.FromSeconds(60) })
     .AddSingleton<NpsdClient>()
+    .AddSingleton<LeaseStore>()
     .AddSingleton<WorkerManager>()
     .AddHostedService<InboxWatcher>();
 

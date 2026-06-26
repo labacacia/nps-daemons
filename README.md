@@ -4,14 +4,7 @@ English | [中文版](./README.cn.md)
 
 [![License](https://img.shields.io/badge/license-Apache%202.0-blue)](./LICENSE)
 [![GitHub Release](https://img.shields.io/github/v/release/labacacia/nps-daemons?include_prereleases)](https://github.com/labacacia/nps-daemons/releases)
-[![Release](https://img.shields.io/badge/release-v1.0.0--alpha.13-orange.svg)](./CHANGELOG.md)
-[![Next](https://img.shields.io/badge/next-v1.0.0--alpha.14--candidate-yellow.svg)](./CHANGELOG.md#100-alpha14--unreleased)
 [![Architecture](https://img.shields.io/badge/architecture-3--layer-success)](./docs/architecture.md)
-[![NCP](https://img.shields.io/badge/NCP-v0.8-5b8cff.svg)]()
-[![NWP](https://img.shields.io/badge/NWP-v0.14-4af0b0.svg)]()
-[![NIP](https://img.shields.io/badge/NIP-v0.10-7b61ff.svg)]()
-[![NDP](https://img.shields.io/badge/NDP-v0.9-f0a050.svg)]()
-[![NOP](https://img.shields.io/badge/NOP-v0.7-ff8c42.svg)]()
 
 Reference deployment binaries for the **Neural Protocol Suite (NPS)** —
 **four open-source daemons** spanning the host-local and network-entry
@@ -26,12 +19,12 @@ layers of the standard NPS deployment topology.
 
 ## What's in this repo
 
-| Layer | Daemon | Default port | Status at latest published `v1.0.0-alpha.13` + alpha.14 candidate docs |
+| Layer | Daemon | Default port | Status at `v1.0.0-alpha.14` |
 |-------|--------|--------------|----------------------------|
-| 1 | [`npsd`](./npsd/) | `127.0.0.1:17433` | L1 minimum: HTTP listener, root keypair generation (POSIX `0600`), `/.nwm`, `/health`, and loopback dev-stack integration. |
-| 1 | [`nps-runner`](./nps-runner/) | — (worker) | L3 task-claim / lease semantics aligned to NPS-CR-0007; Generic Host worker scaffold remains the OSS baseline. |
-| 2 | [`nps-ingress`](./nps-ingress/) | `:8080` | Native-mode TLS/mTLS ingress boundary aligned to NPS-RFC-0006; public HTTP listener and `/health` remain the OSS baseline. |
-| 2 | [`nps-registry`](./nps-registry/) | `:17436` | NDP registry with liveness / staleness semantics; consumers can still gracefully fall back when a deployment disables registration. |
+| 1 | [`npsd`](./npsd/) | `127.0.0.1:17433` | L1 minimum: HTTP listener, root keypair generation (POSIX `0600`), `/.nwm`, `/health`. |
+| 1 | [`nps-runner`](./nps-runner/) | — (worker) | Phase 1 skeleton — Generic Host scaffolding + 30 s heartbeat. Inbox watcher + spawn-spec resolver land alpha.11+. |
+| 2 | [`nps-ingress`](./nps-ingress/) | `:8080` | Phase 1 skeleton — public HTTP listener + `/health`. TLS termination + rate limit + auth + CGN debit + reputation lookup land alpha.4 → alpha.5. |
+| 2 | [`nps-registry`](./nps-registry/) | `:17436` | Phase 1 skeleton — NDP `Resolve` / `Graph` / `Announce` URLs return `NDP-REGISTRY-UNAVAILABLE` so consumers can wire and gracefully fall back. SQLite-backed real registry lands alpha.4. |
 
 Each daemon lives in its own subdirectory with its own
 `Dockerfile` / `docker-compose.yml` / README — they share a release
@@ -78,8 +71,8 @@ Each subdirectory ships a self-contained Dockerfile:
 
 ```bash
 cd npsd
-docker build -t labacacia/npsd:1.0.0-alpha.13 .
-docker run --rm -p 17433:17433 -v npsd-data:/data labacacia/npsd:1.0.0-alpha.13
+docker build -t labacacia/npsd:1.0.0-alpha.14 .
+docker run --rm -p 17433:17433 -v npsd-data:/data labacacia/npsd:1.0.0-alpha.14
 ```
 
 The .NET 10 SDK works for source builds too:
@@ -101,12 +94,12 @@ Self-contained native packages — no .NET runtime required — are published as
 the Docker images. Each package installs a systemd service (Linux) or a Windows service
 registered under a virtual `NT SERVICE\<daemon>` account.
 
-Replace `1.0.0-alpha.13` with the current release tag as needed.
+Replace `1.0.0-alpha.14` with the current release tag as needed.
 
 ### Ubuntu / Debian (amd64)
 
 ```bash
-VER=1.0.0-alpha.13
+VER=1.0.0-alpha.14
 for pkg in npsd nps-runner nps-ingress nps-registry; do
     curl -LO "https://github.com/labacacia/nps-daemons/releases/download/v${VER}/${pkg}_${VER//-alpha./~alpha.}_amd64.deb"
     sudo dpkg -i "${pkg}_${VER//-alpha./~alpha.}_amd64.deb"
@@ -117,7 +110,7 @@ Or install only the daemons you need, e.g.:
 
 ```bash
 VER=1.0.0~alpha.13   # Debian version format (~ replaces -)
-curl -LO "https://github.com/labacacia/nps-daemons/releases/download/v1.0.0-alpha.13/npsd_${VER}_amd64.deb"
+curl -LO "https://github.com/labacacia/nps-daemons/releases/download/v1.0.0-alpha.14/npsd_${VER}_amd64.deb"
 sudo dpkg -i "npsd_${VER}_amd64.deb"
 sudo systemctl status npsd
 ```
@@ -129,7 +122,7 @@ Data directory: `/var/lib/nps/npsd/` (owned by system user `npsd`)
 ### Fedora / RHEL (x86_64)
 
 ```bash
-VER=1.0.0-alpha.13
+VER=1.0.0-alpha.14
 RPM_VER=1.0.0
 RPM_REL=0.alpha.6.1
 for pkg in npsd nps-runner nps-ingress nps-registry; do
@@ -148,7 +141,7 @@ Data directory: `/var/lib/nps/npsd/` (owned by system user `npsd`)
 ### Windows (x64, MSI)
 
 ```powershell
-$ver = "1.0.0-alpha.13"
+$ver = "1.0.0-alpha.14"
 foreach ($pkg in @("npsd","nps-runner","nps-ingress","nps-registry")) {
     $file = "$pkg-$ver-win-x64.msi"
     Invoke-WebRequest -Uri "https://github.com/labacacia/nps-daemons/releases/download/v$ver/$file" -OutFile $file

@@ -6,6 +6,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ---
 
+## [1.0.0-alpha.14] — 2026-06-26
+
+- Suite-wide version sync to 1.0.0-alpha.14.
+
+## [1.0.0-alpha.13] — 2026-06-13
+
+- Suite-wide version sync to 1.0.0-alpha.13 (L2 cross-machine NDP registry).
+
 ## [1.0.0-alpha.7] — 2026-05-18
 
 ### Tracking the suite
