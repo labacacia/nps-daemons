@@ -10,13 +10,14 @@ English | [中文版](./README.cn.md)
 > [`docs/daemons/architecture.md`](https://github.com/labacacia/nps-daemons/blob/main/docs/architecture.md)
 > for the broader six-daemon topology.
 
-## Status — alpha.4
+## Status — v1.0.0-alpha.13 package, alpha.14 candidate boundary
 
-**Phase 1 skeleton.** Public-facing HTTP listener with a `/health`
-endpoint that documents the planned milestones. Real ingress logic
-(TLS termination, rate limit, auth, CGN debit, reputation lookup,
-Anchor Node middleware wiring per [NPS-CR-0001](https://github.com/labacacia/NPS-Release/blob/main/spec/cr/NPS-CR-0001-anchor-bridge-split.md))
-remains planned for alpha.11+.
+**Published OSS baseline.** Public-facing HTTP listener with a `/health`
+endpoint that documents the planned milestones. The alpha.14 candidate docs
+align the native NCP TLS/mTLS contract at the SDK/spec layer; daemon endpoint
+wiring plus rate limit, auth, CGN debit, reputation lookup, and Anchor Node
+middleware wiring per [NPS-CR-0001](https://github.com/labacacia/NPS-Release/blob/main/spec/cr/NPS-CR-0001-anchor-bridge-split.md)
+remain follow-up work.
 
 This skeleton has been in place since alpha.3 so that the deployment surface (process
 name, NuGet package id, Docker image tag) is stable from the start of
@@ -29,8 +30,8 @@ of "cluster control plane that routes NPS frames into NOP" has been
 renamed **Anchor Node** in the NWP specification by
 [NPS-CR-0001](https://github.com/labacacia/NPS-Release/blob/main/spec/cr/NPS-CR-0001-anchor-bridge-split.md). The
 `nps-ingress` process MAY host an Anchor Node middleware via
-`NPS.NWP.Anchor` — that wiring is intentionally deferred to alpha.4
-so this skeleton stays minimal.
+`NPS.NWP.Anchor`; that wiring is intentionally deferred so this OSS
+baseline stays minimal.
 
 ## Quick start
 
@@ -42,8 +43,8 @@ curl -s http://localhost:8080/health | jq
 ### Docker
 
 ```bash
-docker build -f tools/daemons/nps-ingress/Dockerfile -t labacacia/nps-ingress:1.0.0-alpha.11 .
-docker run --rm -p 8080:8080 labacacia/nps-ingress:1.0.0-alpha.11
+docker build -f tools/daemons/nps-ingress/Dockerfile -t labacacia/nps-ingress:1.0.0-alpha.13 .
+docker run --rm -p 8080:8080 labacacia/nps-ingress:1.0.0-alpha.13
 ```
 
 ## Configuration (env vars)

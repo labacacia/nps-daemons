@@ -8,12 +8,13 @@
 > DDoS 防护。完整六-daemon 拓扑见
 > [`docs/daemons/architecture.cn.md`](https://github.com/labacacia/nps-daemons/blob/main/docs/architecture.cn.md)。
 
-## 状态 —— alpha.4
+## 状态 —— v1.0.0-alpha.13 包，alpha.14 candidate 边界
 
-**Phase 1 骨架。** 公网 HTTP 监听 + `/health` 端点（端点本身记录后续里程碑）。
-实际 ingress 逻辑（TLS termination、限速、鉴权、CGN 扣款、声誉查询、
+**已发布 OSS baseline。** 公网 HTTP 监听 + `/health` 端点（端点本身记录后续里程碑）。
+alpha.14 candidate 文档在 SDK/spec 层面对齐 native NCP TLS/mTLS 合约；daemon
+端点接线，以及限速、鉴权、CGN 扣款、声誉查询、
 [NPS-CR-0001](https://github.com/labacacia/NPS-Release/blob/main/spec/cr/NPS-CR-0001-anchor-bridge-split.md) Anchor Node 中间件
-接入）在 alpha.4 → alpha.5 落地。
+接入仍是后续工作。
 
 骨架自 alpha.3 起存在，目的是让部署面（进程名、NuGet 包 id、Docker image
 tag）从 daemon 生态的起点就稳定下来。
@@ -23,7 +24,7 @@ tag）从 daemon 生态的起点就稳定下来。
 这是**进程**名 `nps-ingress`。*规范层*的"集群控制平面、把 NPS 帧路由到
 NOP"角色已在 NWP 规范中由 [NPS-CR-0001](https://github.com/labacacia/NPS-Release/blob/main/spec/cr/NPS-CR-0001-anchor-bridge-split.md)
 重命名为 **Anchor Node**。`nps-ingress` 进程 MAY 通过 `NPS.NWP.Anchor`
-承载 Anchor Node 中间件 —— 该接入故意延后到 alpha.4，让本骨架保持最小。
+承载 Anchor Node 中间件；该接入故意延后，让 OSS baseline 保持最小。
 
 ## 快速上手
 
@@ -35,8 +36,8 @@ curl -s http://localhost:8080/health | jq
 ### Docker
 
 ```bash
-docker build -f tools/daemons/nps-ingress/Dockerfile -t labacacia/nps-ingress:1.0.0-alpha.11 .
-docker run --rm -p 8080:8080 labacacia/nps-ingress:1.0.0-alpha.11
+docker build -f tools/daemons/nps-ingress/Dockerfile -t labacacia/nps-ingress:1.0.0-alpha.13 .
+docker run --rm -p 8080:8080 labacacia/nps-ingress:1.0.0-alpha.13
 ```
 
 ## 配置（环境变量）

@@ -4,7 +4,14 @@
 
 [![License](https://img.shields.io/badge/license-Apache%202.0-blue)](./LICENSE)
 [![GitHub Release](https://img.shields.io/github/v/release/labacacia/nps-daemons?include_prereleases)](https://github.com/labacacia/nps-daemons/releases)
+[![Release](https://img.shields.io/badge/release-v1.0.0--alpha.13-orange.svg)](./CHANGELOG.cn.md)
+[![Next](https://img.shields.io/badge/next-v1.0.0--alpha.14--candidate-yellow.svg)](./CHANGELOG.cn.md#100-alpha14--unreleased)
 [![Architecture](https://img.shields.io/badge/architecture-3--layer-success)](./docs/architecture.cn.md)
+[![NCP](https://img.shields.io/badge/NCP-v0.8-5b8cff.svg)]()
+[![NWP](https://img.shields.io/badge/NWP-v0.14-4af0b0.svg)]()
+[![NIP](https://img.shields.io/badge/NIP-v0.10-7b61ff.svg)]()
+[![NDP](https://img.shields.io/badge/NDP-v0.9-f0a050.svg)]()
+[![NOP](https://img.shields.io/badge/NOP-v0.7-ff8c42.svg)]()
 
 **Neural Protocol Suite（NPS）** 的参考部署二进制 ——
 覆盖 NPS 标准三层部署拓扑中**主机层 + 网络入口层** 4 个 OSS daemon。
@@ -18,12 +25,12 @@
 
 ## 仓库内容
 
-| 层 | Daemon | 默认端口 | `v1.0.0-alpha.11` 状态 |
+| 层 | Daemon | 默认端口 | 最新已发布 `v1.0.0-alpha.13` + alpha.14 candidate 文档状态 |
 |----|--------|----------|------------------------|
-| 1 | [`npsd`](./npsd/) | `127.0.0.1:17433` | L1 最小集：HTTP 监听、root keypair 生成（POSIX `0600`）、`/.nwm`、`/health`。|
-| 1 | [`nps-runner`](./nps-runner/) | —（worker）| Phase 1 骨架 —— Generic Host 脚手架 + 30 秒心跳。Inbox 监听 + spawn-spec 解析在 alpha.11+。|
-| 2 | [`nps-ingress`](./nps-ingress/) | `:8080` | Phase 1 骨架 —— 公网 HTTP 监听 + `/health`。TLS 卸载 + rate limit + auth + CGN 计费 + reputation 查询在 alpha.4 → alpha.5。|
-| 2 | [`nps-registry`](./nps-registry/) | `:17436` | Phase 1 骨架 —— NDP `Resolve` / `Graph` / `Announce` 全部返回 `NDP-REGISTRY-UNAVAILABLE`，方便消费者预先接线 + 优雅降级。SQLite 实仓在 alpha.4。|
+| 1 | [`npsd`](./npsd/) | `127.0.0.1:17433` | L1 最小集：HTTP 监听、root keypair 生成（POSIX `0600`）、`/.nwm`、`/health`，以及 loopback dev-stack 集成。|
+| 1 | [`nps-runner`](./nps-runner/) | —（worker）| L3 task-claim / lease 语义对齐 NPS-CR-0007；Generic Host worker scaffold 仍是 OSS baseline。|
+| 2 | [`nps-ingress`](./nps-ingress/) | `:8080` | 原生模式 TLS/mTLS ingress 边界对齐 NPS-RFC-0006；公网 HTTP 监听与 `/health` 仍是 OSS baseline。|
+| 2 | [`nps-registry`](./nps-registry/) | `:17436` | NDP registry 带 liveness / staleness 语义；部署关闭 registry 时消费者仍可优雅降级。|
 
 每个 daemon 在自己的子目录里有独立的 `Dockerfile` / `docker-compose.yml` /
 README —— 共享发布节奏、共享基础镜像，但独立构建独立发版。
@@ -69,8 +76,8 @@ docker compose up -d npsd
 
 ```bash
 cd npsd
-docker build -t labacacia/npsd:1.0.0-alpha.11 .
-docker run --rm -p 17433:17433 -v npsd-data:/data labacacia/npsd:1.0.0-alpha.11
+docker build -t labacacia/npsd:1.0.0-alpha.13 .
+docker run --rm -p 17433:17433 -v npsd-data:/data labacacia/npsd:1.0.0-alpha.13
 ```
 
 源码构建也行（需要 .NET 10 SDK）：
@@ -90,14 +97,14 @@ dotnet run
 无需 .NET 运行时，开箱即用。Linux 安装包注册 systemd 服务；Windows MSI 通过
 `NT SERVICE\<daemon>` 虚拟账户注册 Windows 服务。
 
-版本号 `1.0.0-alpha.11` 替换为当前发布版本即可。
+版本号 `1.0.0-alpha.13` 替换为当前发布版本即可。
 
 ### Ubuntu / Debian（amd64）
 
 ```bash
-VER=1.0.0~alpha.11   # Debian 版本格式（用 ~ 分隔预发布）
+VER=1.0.0~alpha.13   # Debian 版本格式（用 ~ 分隔预发布）
 for pkg in npsd nps-runner nps-ingress nps-registry; do
-    curl -LO "https://github.com/labacacia/nps-daemons/releases/download/v1.0.0-alpha.11/${pkg}_${VER}_amd64.deb"
+    curl -LO "https://github.com/labacacia/nps-daemons/releases/download/v1.0.0-alpha.13/${pkg}_${VER}_amd64.deb"
     sudo dpkg -i "${pkg}_${VER}_amd64.deb"
 done
 ```
@@ -109,7 +116,7 @@ done
 ### Fedora / RHEL（x86_64）
 
 ```bash
-VER=1.0.0-alpha.11
+VER=1.0.0-alpha.13
 RPM_VER=1.0.0
 RPM_REL=0.alpha.6.1
 for pkg in npsd nps-runner nps-ingress nps-registry; do
@@ -125,7 +132,7 @@ done
 ### Windows（x64，MSI）
 
 ```powershell
-$ver = "1.0.0-alpha.11"
+$ver = "1.0.0-alpha.13"
 foreach ($pkg in @("npsd","nps-runner","nps-ingress","nps-registry")) {
     $file = "$pkg-$ver-win-x64.msi"
     Invoke-WebRequest -Uri "https://github.com/labacacia/nps-daemons/releases/download/v$ver/$file" -OutFile $file
