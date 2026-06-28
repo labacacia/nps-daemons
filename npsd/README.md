@@ -47,10 +47,10 @@ curl -s http://127.0.0.1:17433/.nwm   | jq
 ### Docker
 
 ```bash
-docker build -f tools/daemons/npsd/Dockerfile -t labacacia/npsd:1.0.0-alpha.14 .
+docker build -f tools/daemons/npsd/Dockerfile -t labacacia/npsd:1.0.0-alpha.15 .
 docker run --rm -p 17433:17433 \
   -v npsd-data:/data \
-  labacacia/npsd:1.0.0-alpha.14
+  labacacia/npsd:1.0.0-alpha.15
 ```
 
 ## API
@@ -70,7 +70,7 @@ All endpoints return JSON unless noted. Errors carry `{error, status, message}` 
 
 | Method | Path | Purpose |
 |--------|------|---------|
-| `POST` | `/v1/inbox/{nid}` | Deposit a message addressed to `{nid}`. Body is the raw payload. Headers: `Content-Type` (stored verbatim), `X-Nps-Inbox-Priority` (int, default 0; higher drains first), `X-Nps-Inbox-Ttl-Seconds` (int, default 600). Returns `{message_id, enqueued_at, expires_at}`. `404` if recipient not on this host; `403` if revoked; `429` if inbox full; `413` if payload exceeds the per-message cap. |
+| `POST` | `/v1/inbox/{nid}` | Deposit a message addressed to `{nid}`. Body is the raw payload. Headers: `Content-Type` (stored verbatim), `X-Nps-Inbox-Priority` (int, default 0; higher drains first), `X-Nps-Inbox-Ttl-Seconds` (int, default 600). Returns `{message_id, enqueued_at, expires_at}`. `404` if recipient not on this host; `401` with `NIP-CERT-REVOKED` if revoked; `429` if inbox full; `413` if payload exceeds the per-message cap. |
 | `GET`  | `/v1/inbox/{nid}` | Long-poll for messages. Query: `?wait=N` (seconds, clamped to `NPSD_MAX_INBOX_WAIT_SECONDS`), `?batch=B` (max messages returned, default 16). Returns `{nid, count, messages: [{message_id, enqueued_at, expires_at, priority, content_type, payload_b64}]}`. Empty array on timeout. |
 | `DELETE` | `/v1/inbox/{nid}/{message_id}` | Ack a message, removing it from the queue. Idempotent — second call returns `404`. |
 | `GET` | `/v1/inbox/{nid}/depth` | Current pending count for the NID. |

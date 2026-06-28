@@ -4,6 +4,7 @@
 using System.Text.Json;
 using NPS.Daemon.Npsd.Inbox;
 using NPS.Daemon.Npsd.SubNids;
+using NPS.NIP.Ca;
 
 namespace NPS.Daemon.Npsd.Endpoints;
 
@@ -160,7 +161,7 @@ public static class InboxEndpoints
     private static IResult ProblemNotFound(string nid) =>
         Results.Json(new
         {
-            error   = "NIP-NID-NOT-FOUND",
+            error   = NipErrorCodes.NidNotFound,
             status  = "NPS-CLIENT-NOT-FOUND",
             nid,
             message = "Sub-NID not issued on this host.",
@@ -169,9 +170,9 @@ public static class InboxEndpoints
     private static IResult ProblemRevoked(string nid) =>
         Results.Json(new
         {
-            error   = "NIP-NID-REVOKED",
-            status  = "NPS-AUTH-FORBIDDEN",
+            error   = NipErrorCodes.CertRevoked,
+            status  = "NPS-AUTH-UNAUTHENTICATED",
             nid,
             message = "Sub-NID has been revoked.",
-        }, s_jsonOpts, statusCode: 403);
+        }, s_jsonOpts, statusCode: 401);
 }

@@ -6,11 +6,18 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ---
 
+## [1.0.0-alpha.15] — 2026-06-28
+
+### Changed
+
+- Suite-wide alpha.15 sync: aligned package metadata, current README/version banners, distribution source trees, and release-prep notes with NPS-Dev.
+- Carries the NCP Tier-3 BinaryVector, inbound NWP Bridge server hardening, NIP canonical trust/revoke, and NDP discovery canonical-form alignment delivered by the source-of-truth tree.
+
 ## [1.0.0-alpha.14] — 2026-06-26
 
 - Suite-wide version sync to 1.0.0-alpha.14.
 
-## [1.0.0-alpha.13] — 2026-06-13
+## [1.0.0-alpha.14] — 2026-06-13
 
 ### Added
 

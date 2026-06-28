@@ -3,6 +3,7 @@
 
 using System.Text.Json;
 using NPS.Daemon.Npsd.SubNids;
+using NPS.NIP.Ca;
 
 namespace NPS.Daemon.Npsd.Endpoints;
 
@@ -61,7 +62,7 @@ public static class SubNidEndpoints
             {
                 return Results.Json(new
                 {
-                    error   = "NIP-NID-ALREADY-EXISTS",
+                    error   = NipErrorCodes.NidAlreadyExists,
                     status  = "NPS-CLIENT-CONFLICT",
                     message = ex.Message,
                     nid     = ex.Nid,
@@ -93,7 +94,7 @@ public static class SubNidEndpoints
             if (record is null)
                 return Results.Json(new
                 {
-                    error   = "NIP-NID-NOT-FOUND",
+                    error   = NipErrorCodes.NidNotFound,
                     status  = "NPS-CLIENT-NOT-FOUND",
                     nid,
                 }, s_jsonOpts, statusCode: 404);
@@ -130,7 +131,7 @@ public static class SubNidEndpoints
                 ? Results.NoContent()
                 : Results.Json(new
                 {
-                    error   = "NIP-NID-NOT-FOUND",
+                    error   = NipErrorCodes.NidNotFound,
                     status  = "NPS-CLIENT-NOT-FOUND",
                     nid,
                     message = "Already revoked, or never issued.",

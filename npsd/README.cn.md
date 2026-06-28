@@ -47,10 +47,10 @@ curl -s http://127.0.0.1:17433/.nwm   | jq
 ### Docker
 
 ```bash
-docker build -f tools/daemons/npsd/Dockerfile -t labacacia/npsd:1.0.0-alpha.14 .
+docker build -f tools/daemons/npsd/Dockerfile -t labacacia/npsd:1.0.0-alpha.15 .
 docker run --rm -p 17433:17433 \
   -v npsd-data:/data \
-  labacacia/npsd:1.0.0-alpha.14
+  labacacia/npsd:1.0.0-alpha.15
 ```
 
 ## API
@@ -70,7 +70,7 @@ docker run --rm -p 17433:17433 \
 
 | 方法 | 路径 | 用途 |
 |------|------|------|
-| `POST` | `/v1/inbox/{nid}` | 投递消息到 `{nid}`。Body 是原始 payload。Header：`Content-Type`（原样存储）、`X-Nps-Inbox-Priority`（int，默认 0；越大越先消费）、`X-Nps-Inbox-Ttl-Seconds`（int，默认 600）。返回 `{message_id, enqueued_at, expires_at}`。收件人不在本机 → `404`；已 revoke → `403`；inbox 满 → `429`；payload 超 cap → `413`。|
+| `POST` | `/v1/inbox/{nid}` | 投递消息到 `{nid}`。Body 是原始 payload。Header：`Content-Type`（原样存储）、`X-Nps-Inbox-Priority`（int，默认 0；越大越先消费）、`X-Nps-Inbox-Ttl-Seconds`（int，默认 600）。返回 `{message_id, enqueued_at, expires_at}`。收件人不在本机 → `404`；已 revoke → `401` + `NIP-CERT-REVOKED`；inbox 满 → `429`；payload 超 cap → `413`。|
 | `GET`  | `/v1/inbox/{nid}` | Long-poll 取消息。Query：`?wait=N`（秒，clamp 到 `NPSD_MAX_INBOX_WAIT_SECONDS`）、`?batch=B`（默认 16）。返回 `{nid, count, messages: [{message_id, enqueued_at, expires_at, priority, content_type, payload_b64}]}`。超时返回空数组。|
 | `DELETE` | `/v1/inbox/{nid}/{message_id}` | Ack 一条消息（从队列删除）。幂等 —— 二次调用返回 `404`。|
 | `GET` | `/v1/inbox/{nid}/depth` | 该 NID 当前的待消费数量。 |
